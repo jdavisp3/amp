@@ -40,7 +40,7 @@
 -include_lib("eunit/include/eunit.hrl").
 -endif.
 
--include("epryl_amp.hrl").
+-include("amp.hrl").
 
 -record(decoder, {
           orig_protocol,
