@@ -56,20 +56,20 @@
 %% Each tuple in an error list specifies a mapping between an atom and
 %% a binary error code.
 
--type amp_key() :: atom().
+-type amp_name() :: atom().
 -type amp_option() :: 'optional'.
 -type amp_type() :: 'string' | 'binary' | 'integer' | 'float' | 'boolean'
-                  | {amplist, [{amp_key(), amp_type(), [amp_option()]}]}.
+                  | {amplist, [{amp_name(), amp_type(), [amp_option()]}]}.
 
 -type amp_error_option() :: 'fatal'.
--type amp_error() :: {atom(), binary(), [amp_error_option()]}.
+-type amp_error() :: {amp_name(), binary(), [amp_error_option()]}.
 
 -type amp_command_option() :: 'requires_answer'.
 
 -record(amp_command, {
-          name :: binary(),
-          arguments,
-          response,
-          errors=[],
+          name :: amp_name(),
+          arguments = [] :: [amp_type()],
+          response = [] :: [amp_type()],
+          errors = [] :: [amp_error()],
           options = [requires_answer] :: [amp_command_option()]
          }).
