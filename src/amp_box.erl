@@ -65,13 +65,16 @@
 -define(AMP_ERROR_PROTOCOL, [{?AMP_KEY_ERROR_CODE, string, []},
                              {?AMP_KEY_ERROR_DESCRIPTION, string, []}]).
 
+-type frame() :: {integer(), iolist()}.
+-type box() :: [frame()].
+
 
 %% @doc Given an error atom key and a string description, return a box
 %% that can be returned by an ask handler as the error information for
 %% an error response.
 %%
-%% @spec make_error(Key::atom(), Description::string()) -> box()
-make_error(Key, Description) when is_atom(Key), is_list(Description) ->
+-spec make_error(Key::amp_name(), Description::binary()) -> box().
+make_error(Key, Description) when is_atom(Key), is_binary(Description) ->
     [{?AMP_KEY_ERROR_CODE, Key},
      {?AMP_KEY_ERROR_DESCRIPTION, Description}].
 
@@ -430,7 +433,7 @@ encode_answer_test() ->
 encode_error_test() ->
     Cmd = #amp_command{arguments=nil, response=nil,
                        errors=[{a, "A", []}, {b, "B", [fatal]}]},
-    Err1 = make_error(a, "AA"),
+    Err1 = make_error(a, <<"AA">>),
     Bin1 = encode_response(error, Cmd, "1", Err1),
     ?assertMatch(Bin1, <<0, 6, "_error", 0, 1, "1",
                          0, 11, "_error_code", 0, 1, "A",
@@ -441,7 +444,7 @@ encode_error_test() ->
                    {?AMP_KEY_ERROR_DESCRIPTION, "AA"}], <<>>},
     ?assertMatch(Out1, decode_box(Decoder, Rest1)),
 
-    Err2 = make_error(b, "BB"),
+    Err2 = make_error(b, <<"BB">>),
     Bin2 = encode_response(error, Cmd, "2", Err2),
     {error, "2", Rest2} = decode_header(Bin2),
     Out2 = {done, [{?AMP_KEY_ERROR_CODE, "B"},
