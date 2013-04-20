@@ -1,17 +1,30 @@
-%%% @author Dave Peticolas <dave@krondo.com>
-%%% @copyright (C) 2008-2013, Dave Peticolas
-%%% @doc
-%%% AMP protocol utilities. See:
-%%%  [http://twistedmatrix.com/documents/current/api/twisted.protocols.amp.html]
-%%%
-%%% This module implements low-level encoding and decoding of AMP
-%%% Boxes. An Amp Box is represented in Erlang as a list of key/value
-%%% pairs. This type is referred to as a Box.
-%%%
-%%%    Box = [KVP]
-%%%    KVP = {Key, Value}
-%%%    Key = string()
-%%%    Value = term()
+%% Copyright (c) 2013, Dave Peticolas <dave@krondo.com>
+%%
+%% Permission to use, copy, modify, and/or distribute this software for any
+%% purpose with or without fee is hereby granted, provided that the above
+%% copyright notice and this permission notice appear in all copies.
+%%
+%% THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+%% WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+%% MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+%% ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+%% WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+%% ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+%% OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+%%
+%% @doc
+%% AMP protocol utilities. See:
+%%  [http://twistedmatrix.com/documents/current/api/twisted.protocols.amp.html]
+%%  [http://twistedmatrix.com/documents/current/core/howto/amp.html]
+%%
+%% This module implements low-level encoding and decoding of AMP
+%% Boxes. An Amp Box is represented in Erlang as a list of key/value
+%% pairs. This type is referred to as a Box.
+%%
+%%    Box = [KVP]
+%%    KVP = {Key, Value}
+%%    Key = string()
+%%    Value = term()
 
 -module(amp_box).
 
@@ -23,7 +36,9 @@
          decode_header/1, decode_command_header/1,
          encode_box/2]).
 
+-ifdef(TEST).
 -include_lib("eunit/include/eunit.hrl").
+-endif.
 
 -include("epryl_amp.hrl").
 
@@ -329,9 +344,9 @@ error_name(Key, Command) ->
     Name.
 
 
-%%%===================================================================
-%%% Tests
-%%%===================================================================
+% Tests
+
+-ifdef(TEST).
 
 encode_test_() ->
     [
@@ -566,3 +581,5 @@ decode_header_test_() ->
                    decode_header(<<0, 6, "_error", 0, 1, $a>>)),
      ?_assertError(_, decode_header(<<0, 4, "_bad", 0, 1, $a>>))
      ].
+
+-endif.
