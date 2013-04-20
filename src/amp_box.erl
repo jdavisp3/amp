@@ -42,7 +42,28 @@
 
 -include("epryl_amp.hrl").
 
--record(decoder, {orig_protocol, protocol, remainder, box=[]}).
+-record(decoder, {
+          orig_protocol,
+          protocol,
+          remainder,
+          box=[]
+         }).
+
+% Pre-defined key names
+-define(AMP_KEY_ASK, "_ask").
+-define(AMP_KEY_COMMAND, "_command").
+-define(AMP_KEY_ANSWER, "_answer").
+-define(AMP_KEY_ERROR, "_error").
+-define(AMP_KEY_ERROR_CODE, "_error_code").
+-define(AMP_KEY_ERROR_DESCRIPTION, "_error_description").
+
+% Limits
+-define(AMP_MAX_KEY_LEN, 255).
+-define(AMP_MAX_VAL_LEN, 65535).
+
+% The protocol for error responses.
+-define(AMP_ERROR_PROTOCOL, [{?AMP_KEY_ERROR_CODE, string, []},
+                             {?AMP_KEY_ERROR_DESCRIPTION, string, []}]).
 
 
 %% @doc Given an error atom key and a string description, return a box
