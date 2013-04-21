@@ -50,12 +50,12 @@
          }).
 
 % Pre-defined key names
--define(AMP_KEY_ASK, "_ask").
--define(AMP_KEY_COMMAND, "_command").
--define(AMP_KEY_ANSWER, "_answer").
--define(AMP_KEY_ERROR, "_error").
--define(AMP_KEY_ERROR_CODE, "_error_code").
--define(AMP_KEY_ERROR_DESCRIPTION, "_error_description").
+-define(AMP_KEY_ASK, <<"_ask">>).
+-define(AMP_KEY_COMMAND, <<"_command">>).
+-define(AMP_KEY_ANSWER, <<"_answer">>).
+-define(AMP_KEY_ERROR, <<"_error">>).
+-define(AMP_KEY_ERROR_CODE, <<"_error_code">>).
+-define(AMP_KEY_ERROR_DESCRIPTION, <<"_error_description">>).
 
 % Limits
 -define(AMP_MAX_KEY_LEN, 255).
@@ -168,16 +168,17 @@ decode_box(Decoder, Packet) when is_record(Decoder, decoder),
 %% message, plus the remaining bytes in the packet. The function will crash
 %% if the kvp has the wrong name.
 %%
-%% @spec (Packet::binary()) -> Result
-%%
-%%        Result = not_enough | {BoxType, Id::string(), Remaining::binary()}
-%%        BoxType = ask | answer | error
+-spec decode_header(Packet::binary())
+                   -> 'not_enough'
+                          | {'ask' | 'answer' | 'error',
+                             Id::binary(),
+                             Remaining::binary()}.
 decode_header(Packet) when is_binary(Packet) ->
     case match_kvp(Packet) of
         not_enough ->
             not_enough;
         {Key, ValBin, Remaining} ->
-            Id = decode_value(ValBin, string),
+            Id = decode_value(ValBin, binary),
             BoxType = box_type(Key),
             {BoxType, Id, Remaining}
     end.
@@ -216,8 +217,8 @@ encode_box_int([], _Box) ->
 encode_box_int([{Key, Type, Options} | Protocol], Box) ->
     case lists:keysearch(Key, 1, Box) of
         {value, {Key, Value}} ->
-            [_ | _] = Key, % no empty keys
-            EncKeyLength = encode_length(length(Key), ?AMP_MAX_KEY_LEN),
+            <<_, _/binary>> = Key, % no empty keys
+            EncKeyLength = encode_length(size(Key), ?AMP_MAX_KEY_LEN),
             EncValue = encode_value(Value, Type),
             EncLength = encode_length(iolist_size(EncValue), ?AMP_MAX_VAL_LEN),
             [EncKeyLength, Key, EncLength, EncValue
@@ -415,7 +416,8 @@ encode_test_() ->
     ].
 
 encode_ask_test() ->
-    Cmd = #amp_command{name="n", arguments=[{"a", string, []}], response=nil},
+    Cmd = #amp_command{name=<<"n">>,
+                       arguments=[{<<"a">>, string, []}], response=nil},
     Bin = encode_ask(Cmd, "1", [{"a", "A"}]),
     ?assertMatch(Bin, <<0, 4, "_ask", 0, 1, "1",
                         0, 8, "_command", 0, 1, "n",
@@ -423,15 +425,17 @@ encode_ask_test() ->
     ?assertMatch({ask, "1", _}, decode_header(Bin)).
 
 encode_answer_test() ->
-    Cmd = #amp_command{name="n", arguments=nil, response=[{"b", string, []}]},
-    Bin = encode_answer(Cmd, "1", [{"b", "B"}]),
+    Cmd = #amp_command{name=<<"n">>, arguments=nil,
+                       response=[{<<"b">>, string, []}]},
+    Bin = encode_answer(Cmd, "1", [{<<"b">>, "B"}]),
     ?assertMatch(Bin, <<0, 7, "_answer", 0, 1, "1",
                         0, 1, "b", 0, 1, "B", 0, 0>>),
     ?assertMatch({answer, "1", _}, decode_header(Bin)).
 
 encode_error_test() ->
     Cmd = #amp_command{arguments=nil, response=nil,
-                       errors=[{a, "A", []}, {b, "B", [fatal]}]},
+                       errors=[{a, <<"A">>, []},
+                               {b, <<"B">>, [fatal]}]},
     Err1 = make_error(a, <<"AA">>),
     Bin1 = encode_response(error, Cmd, "1", Err1),
     ?assertMatch(Bin1, <<0, 6, "_error", 0, 1, "1",
