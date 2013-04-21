@@ -217,10 +217,10 @@ encode_box_int([{Key, Type, Options} | Protocol], Box) ->
     end.
 
 % @private
-% @spec (Protocol::list(), Box::box(), Packet::binary()) -> Result
-%      Result = {not_done, Protocol, Box, Rest::binary()} |
-%               {done, Box, Rest::binary()}
 % @doc Decode the packet as much as possible and return the results.
+-spec decode_box(Protocol::amp_list(), Box::box(), Packet::binary()) ->
+                        {not_done, amp_list(), box(), Rest::binary()} |
+                        {done, box(), Rest::binary()}.
 decode_box(Protocol, Box, Packet) when size(Packet) < 2 ->
     {not_done, Protocol, Box, Packet};
 decode_box([], Box, <<0, 0, Rest/binary>>) ->
