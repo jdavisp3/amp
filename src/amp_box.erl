@@ -251,15 +251,16 @@ decode_box(Protocol, Box, Packet) ->
     end.
 
 % @private
-% @spec (Packet::binary()) ->
-%        {Key::string(), ValBin::binary(), Rest::binary()} | not_enough
 % @doc Match a key/value pair encoded at the front of Packet.
 % Return a tuple with the key name, the value still encoded as a binary,
 % and the remaining bytes from Packet that were not used in the kvp. Or,
 % if there are not enough bytes to decode the first kvp, return not_enough.
-match_kvp(<<0, KeyLen, KeyBytes:KeyLen/binary,
+-spec match_kvp(Packet::binary()) -> {Key::amp_name(),
+                                      ValBin::binary(),
+                                      Rest::binary()} | 'not_enough'.
+match_kvp(<<0, KeyLen, Key:KeyLen/binary,
             ValLen:16/unsigned-big, Val:ValLen/binary, Rest/binary>>) ->
-    {erlang:binary_to_list(KeyBytes), Val, Rest};
+    {Key, Val, Rest};
 match_kvp(<<0, _/binary>>) ->
     not_enough;
 match_kvp(<<>>) ->
@@ -419,7 +420,7 @@ encode_test_() ->
 encode_ask_test() ->
     Cmd = #amp_command{name = <<"n">>,
                        arguments = [{<<"a">>, string, []}], response=nil},
-    Bin = encode_ask(Cmd, "1", [{"a", "A"}]),
+    Bin = encode_ask(Cmd, "1", [{<<"a">>, "A"}]),
     ?assertMatch(Bin, <<0, 4, "_ask", 0, 1, "1",
                         0, 8, "_command", 0, 1, "n",
                         0, 1, "a", 0, 1, "A", 0, 0>>),
