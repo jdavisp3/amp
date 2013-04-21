@@ -554,18 +554,21 @@ decode_11_test() ->
     ?assertMatch({done, [{"a", 5}], <<>>}, decode_box(Decoder, Input2)).
 
 decode_12_test() ->
-    SubProto = [{"h", integer, []}, {"g", integer, [optional]}],
-    Protocol = [{"'", integer, []}, {"s", {amplist, SubProto}, [optional]}],
+    SubProto = [{<<"h">>, integer, []},
+                {<<"g">>, integer, [optional]}],
+    Protocol = [{<<"'">>, integer, []},
+                {<<"s">>, {amplist, SubProto}, [optional]}],
     Decoder = new_decoder(Protocol),
 
     Input1 = <<0, 1, $', 0, 1, $0, 0, 0, 1, 2, 3>>,
-    ?assertMatch({done, [{"'", 0}], <<1, 2, 3>>}, decode_box(Decoder, Input1)),
+    ?assertMatch({done, [{<<"'">>, 0}], <<1, 2, 3>>},
+                 decode_box(Decoder, Input1)),
 
     Input2 = <<0, 1, $', 0, 1, $0,
               0, 1, $s, 0, 14,
                 0, 1, $h, 0, 1, $1, 0, 1, $g, 0, 1, $2, 0, 0,
               0, 0, 1, 2, 3>>,
-    Output2 = [{"'", 0}, {"s", [[{"h", 1}, {"g", 2}]]}],
+    Output2 = [{<<"'">>, 0}, {<<"s">>, [[{<<"h">>, 1}, {<<"g">>, 2}]]}],
     ?assertMatch({done, Output2, <<1, 2, 3>>}, decode_box(Decoder, Input2)),
 
     Input3 = <<0, 1, $', 0, 1, $0,
@@ -573,7 +576,8 @@ decode_12_test() ->
                 0, 1, $h, 0, 1, $1, 0, 1, $g, 0, 1, $2, 0, 0,
                 0, 1, $h, 0, 1, $5, 0, 0,
               0, 0, 1, 2, 3>>,
-    Output3 = [{"'", 0}, {"s", [[{"h", 1}, {"g", 2}], [{"h", 5}]]}],
+    Output3 = [{<<"'">>, 0}, {<<"s">>, [[{<<"h">>, 1},
+                                         {<<"g">>, 2}], [{<<"h">>, 5}]]}],
     ?assertMatch({done, Output3, <<1, 2, 3>>}, decode_box(Decoder, Input3)).
 
 decode_13_test() ->
