@@ -122,7 +122,7 @@ encode_response(error, Command, Id, Box) ->
 %% @doc Return a new decoder object suitable for unserializing a wire
 %% format of an Amp box. Decoders are required arguments for decode_box/2.
 -spec new_decoder(Protocol::amp_list()) -> #decoder{}.
-new_decoder(Protocol) when is_list(Protocol) ->
+new_decoder(Protocol) ->
     [_ | _] = Protocol, % no empty boxes
     EmptyBin = <<>>,
     #decoder{orig_protocol=Protocol, protocol=Protocol, remainder=EmptyBin}.
@@ -134,8 +134,7 @@ new_decoder(Protocol) when is_list(Protocol) ->
 -spec decode_box(Decoder::#decoder{}, Packet::binary()) ->
                         {not_done, #decoder{}} |
                         {done, Box::box(), Rest::binary()}.
-decode_box(Decoder, Packet) when is_record(Decoder, decoder),
-                                 is_binary(Packet) ->
+decode_box(Decoder, Packet) ->
     Whole = erlang:list_to_binary([Decoder#decoder.remainder, Packet]),
     Result = decode_box(Decoder#decoder.protocol,
                         Decoder#decoder.box, Whole),
@@ -157,7 +156,7 @@ decode_box(Decoder, Packet) when is_record(Decoder, decoder),
                           | {'ask' | 'answer' | 'error',
                              Id::binary(),
                              Remaining::binary()}.
-decode_header(Packet) when is_binary(Packet) ->
+decode_header(Packet) ->
     case match_kvp(Packet) of
         not_enough ->
             not_enough;
@@ -173,7 +172,7 @@ decode_header(Packet) when is_binary(Packet) ->
 -spec decode_command_header(Packet::binary())
                            -> not_enough
                                   | {CommandName::binary(), Remaining::binary()}.
-decode_command_header(Packet) when is_binary(Packet) ->
+decode_command_header(Packet) ->
     case match_kvp(Packet) of
         not_enough ->
             not_enough;
