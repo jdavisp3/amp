@@ -492,33 +492,34 @@ decode_3_test() ->
     ?assertMatch({done, [{"a", 4}], <<14>>}, decode_box(Decoder, Input)).
 
 decode_4_test() ->
-    Protocol = [{"name", string, []}, {"billy o", integer, []}],
+    Protocol = [{<<"name">>, string, []},
+                {<<"billy o">>, integer, []}],
     Decoder = new_decoder(Protocol),
     Input1 = <<0, 7, "billy o", 0, 5, "12345",
                0, 4, "name", 0, 5, "nimbo",
                0, 0>>,
-    Output = {done, [{"billy o", 12345}, {"name", "nimbo"}], <<>>},
+    Output = {done, [{<<"billy o">>, 12345}, {<<"name">>, "nimbo"}], <<>>},
     ?assertMatch(Output, test_one_by_one(Decoder, Input1)),
     Input2 = <<0, 4, "name", 0, 5, "nimbo",
                0, 7, "billy o", 0, 5, "12345",
                0, 0>>,
-    Output2 = {done, [{"name", "nimbo"}, {"billy o", 12345}], <<>>},
+    Output2 = {done, [{<<"name">>, "nimbo"}, {<<"billy o">>, 12345}], <<>>},
     ?assertMatch(Output2, test_one_by_one(Decoder, Input2)).
 
 decode_5_test() ->
-    Protocol = [{"name", string, []}],
+    Protocol = [{<<"name">>, string, []}],
     Decoder = new_decoder(Protocol),
     Input = <<1, 4, "name", 0, 5, "nimbo">>,
     ?assertError(_, test_one_by_one(Decoder, Input)).
 
 decode_6_test() ->
-    Protocol = [{"name", string, []}],
+    Protocol = [{<<"name">>, string, []}],
     Decoder = new_decoder(Protocol),
     Input = <<0, 4, "namx", 0, 5, "nimbo">>,
     ?assertError(_, test_one_by_one(Decoder, Input)).
 
 decode_7_test() ->
-    Protocol = [{"q", integer, []}],
+    Protocol = [{<<"q">>, integer, []}],
     Decoder = new_decoder(Protocol),
     Input = <<0, 1, "q", 0, 5, "nimbo">>,
     ?assertError(_, test_one_by_one(Decoder, Input)).
