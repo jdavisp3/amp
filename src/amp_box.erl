@@ -524,10 +524,11 @@ decode_7_test() ->
     ?assertError(_, test_one_by_one(Decoder, Input)).
 
 decode_8_test() ->
-    Protocol = [{";", float, []}],
+    Protocol = [{<<";">>, float, []}],
     Decoder = new_decoder(Protocol),
     Input = <<0, 1, $;, 0, 3, "1.5", 0, 0, 1, 2, 3>>,
-    ?assertMatch({done, [{";", 1.5}], <<1, 2, 3>>}, decode_box(Decoder, Input)).
+    ?assertMatch({done, [{<<";">>, 1.5}], <<1, 2, 3>>},
+                 decode_box(Decoder, Input)).
 
 decode_9_test() ->
     Protocol = [{<<"//">>, boolean, []}],
