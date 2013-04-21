@@ -256,7 +256,7 @@ match_kvp(<<>>) ->
 % @private
 % @doc Consume the given key from the Protocol and return the
 % type of that key and the remaining protocol.
--spec consume_key(Key::amp_name(), Protocol::amp_list()) ->
+-spec consume_key(Key::binary(), Protocol::amp_list()) ->
                          {Type::atom(), NewProtocol::amp_list()}.
 consume_key(Key, Protocol) ->
     {value, {Key, Type, _Options}, Protocol2} = lists:keytake(Key, 1, Protocol),
