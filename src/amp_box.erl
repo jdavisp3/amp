@@ -546,12 +546,15 @@ decode_10_test() ->
     ?assertMatch({done, [{"b", 5}], <<>>}, decode_box(Decoder, Input2)).
 
 decode_11_test() ->
-    Protocol = [{"a", integer, []}, {"b", integer, [optional]}],
+    Protocol = [{<<"a">>, integer, []},
+                {<<"b">>, integer, [optional]}],
     Decoder = new_decoder(Protocol),
     Input1 = <<0, 1, $a, 0, 1, $4, 0, 1, $b, 0, 1, $5, 0, 0>>,
-    ?assertMatch({done, [{"a", 4}, {"b", 5}], <<>>}, decode_box(Decoder, Input1)),
+    ?assertMatch({done, [{<<"a">>, 4}, {<<"b">>, 5}], <<>>},
+                 decode_box(Decoder, Input1)),
     Input2 = <<0, 1, $a, 0, 1, $5, 0, 0>>,
-    ?assertMatch({done, [{"a", 5}], <<>>}, decode_box(Decoder, Input2)).
+    ?assertMatch({done, [{<<"a">>, 5}], <<>>},
+                 decode_box(Decoder, Input2)).
 
 decode_12_test() ->
     SubProto = [{<<"h">>, integer, []},
