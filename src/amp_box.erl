@@ -429,7 +429,7 @@ encode_ask_test() ->
 encode_answer_test() ->
     Cmd = #amp_command{name = <<"n">>, arguments=nil,
                        response=[{<<"b">>, string, []}]},
-    Bin = encode_answer(Cmd, <<"1">>, [{<<"b">>, "B"}]),
+    Bin = encode_answer(Cmd, "1", [{<<"b">>, "B"}]),
     ?assertMatch(Bin, <<0, 7, "_answer", 0, 1, "1",
                         0, 1, "b", 0, 1, "B", 0, 0>>),
     ?assertMatch({answer, <<"1">>, _}, decode_header(Bin)).
