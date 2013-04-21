@@ -56,14 +56,14 @@
 %% Each tuple in an error list specifies a mapping between an atom and
 %% a binary error code.
 
--type amp_name() :: atom().
--type amp_option() :: 'optional'.
--type amp_list() :: [{amp_name(), amp_type(), [amp_option()]}].
 -type amp_type() :: 'string' | 'binary' | 'integer' | 'float' | 'boolean'
                   | {amplist, amp_list()}.
+-type amp_list() :: [{amp_name(), amp_type(), [amp_option()]}].
+-type amp_name() :: atom().
+-type amp_option() :: 'optional'.
 
--type amp_error_option() :: 'fatal'.
 -type amp_error() :: {amp_name(), binary(), [amp_error_option()]}.
+-type amp_error_option() :: 'fatal'.
 
 -type amp_command_option() :: 'requires_answer'.
 
