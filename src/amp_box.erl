@@ -296,8 +296,8 @@ encode_value(Value, {amplist, Protocol}) ->
 
 
 % @private
-% @spec (ValBin::binary(), Type::atom()) -> term()
 % @doc Decode a value in binary form given its type.
+-spec decode_value(ValBin::binary(), Type::atom()) -> term().
 decode_value(ValBin, integer) ->
     erlang:list_to_integer(erlang:binary_to_list(ValBin));
 decode_value(ValBin, float) ->
