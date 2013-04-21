@@ -339,8 +339,8 @@ ensure_decimal(String) ->
 
 
 % @private
-% @spec (Key::string()) -> atom()
 % @doc Return a box type atom given the key.
+-spec box_type(Key::binary()) -> atom().
 box_type(?AMP_KEY_ASK) ->
     ask;
 box_type(?AMP_KEY_ANSWER) ->
