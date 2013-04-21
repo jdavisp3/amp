@@ -443,7 +443,7 @@ encode_error_test() ->
     ?assertMatch(Bin1, <<0, 6, "_error", 0, 1, "1",
                          0, 11, "_error_code", 0, 1, "A",
                          0, 18, "_error_description", 0, 2, "AA", 0, 0>>),
-    {error, "1", Rest1} = decode_header(Bin1),
+    {error, <<"1">>, Rest1} = decode_header(Bin1),
     Decoder = new_decoder(?AMP_ERROR_PROTOCOL),
     Out1 = {done, [{?AMP_KEY_ERROR_CODE, "A"},
                    {?AMP_KEY_ERROR_DESCRIPTION, "AA"}], <<>>},
@@ -451,7 +451,7 @@ encode_error_test() ->
 
     Err2 = make_error(b, <<"BB">>),
     Bin2 = encode_response(error, Cmd, "2", Err2),
-    {error, "2", Rest2} = decode_header(Bin2),
+    {error, <<"2">>, Rest2} = decode_header(Bin2),
     Out2 = {done, [{?AMP_KEY_ERROR_CODE, "B"},
                    {?AMP_KEY_ERROR_DESCRIPTION, "BB"}], <<>>},
     ?assertMatch(Out2, decode_box(Decoder, Rest2)).
