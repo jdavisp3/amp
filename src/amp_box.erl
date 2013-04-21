@@ -96,13 +96,11 @@ encode_ask(#amp_command{} = Command, Id, Box) ->
 %% @doc Given an amp_command record, a message id, and a box, return a
 %% binary encoding of the AmpBox that would implement the answer box for
 %% a call.
-%%
-%% @spec encode_answer(Command::amp_record(), Id::string(),
-%%                     Box::box()) -> binary()
-encode_answer(Command, Id, Box)
-  when is_record(Command, amp_command), is_list(Id), is_list(Box)->
+-spec encode_answer(Command::#amp_command{}, Id::binary(),
+                    Box::box()) -> binary().
+encode_answer(Command, Id, Box) ->
     [_ | _] = Box, % no empty boxes
-    encode_box([{?AMP_KEY_ANSWER, string, []} | Command#amp_command.response],
+    encode_box([{?AMP_KEY_ANSWER, binary, []} | Command#amp_command.response],
                [{?AMP_KEY_ANSWER, Id} | Box]).
 
 %% @doc Given an amp_command record, a message id, and a box, return a
@@ -202,7 +200,7 @@ decode_command_header(Packet) when is_binary(Packet) ->
 %% @doc Given an AmpList protocol and a box, return a binary encoding
 %% of the box that matches the protocol.
 %%
-%% @spec encode_box(Protocol::AmpList, Box::box()) -> binary()
+-spec encode_box(Protocol::amp_list(), Box::box()) -> binary().
 encode_box(Protocol, Box) when is_list(Protocol), is_list(Box) ->
     IOList = encode_box_int(Protocol, Box),
     [_, _ | _] = IOList, % no empty boxes
@@ -210,8 +208,8 @@ encode_box(Protocol, Box) when is_list(Protocol), is_list(Box) ->
 
 
 % @private
-% @spec (Protocol::list(), Box::box()) -> iolist()
 % @doc Encode the box according to the given protocol into the IOList.
+% @spec (Protocol::list(), Box::box()) -> iolist()
 encode_box_int([], _Box) ->
     [<<0, 0>>];
 encode_box_int([{Key, Type, Options} | Protocol], Box) ->
@@ -420,7 +418,7 @@ encode_test_() ->
 encode_ask_test() ->
     Cmd = #amp_command{name = <<"n">>,
                        arguments = [{<<"a">>, string, []}], response=nil},
-    Bin = encode_ask(Cmd, "1", [{<<"a">>, "A"}]),
+    Bin = encode_ask(Cmd, <<"1">>, [{<<"a">>, "A"}]),
     ?assertMatch(Bin, <<0, 4, "_ask", 0, 1, "1",
                         0, 8, "_command", 0, 1, "n",
                         0, 1, "a", 0, 1, "A", 0, 0>>),
@@ -429,7 +427,7 @@ encode_ask_test() ->
 encode_answer_test() ->
     Cmd = #amp_command{name = <<"n">>, arguments=nil,
                        response=[{<<"b">>, string, []}]},
-    Bin = encode_answer(Cmd, "1", [{<<"b">>, "B"}]),
+    Bin = encode_answer(Cmd, <<"1">>, [{<<"b">>, "B"}]),
     ?assertMatch(Bin, <<0, 7, "_answer", 0, 1, "1",
                         0, 1, "b", 0, 1, "B", 0, 0>>),
     ?assertMatch({answer, <<"1">>, _}, decode_header(Bin)).
