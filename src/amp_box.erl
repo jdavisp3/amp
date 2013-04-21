@@ -589,12 +589,13 @@ decode_14_test() ->
     ?assertError(_, test_one_by_one(Decoder, Input)).
 
 decode_15_test() ->
-    Protocol = [{"name", binary, []}, {"billy o", integer, []}],
+    Protocol = [{<<"name">>, binary, []},
+                {<<"billy o">>, integer, []}],
     Decoder = new_decoder(Protocol),
     Input1 = <<0, 7, "billy o", 0, 5, "12345",
                0, 4, "name", 0, 5, "nimbo",
                0, 0>>,
-    Output = {done, [{"billy o", 12345}, {"name", <<"nimbo">>}], <<>>},
+    Output = {done, [{<<"billy o">>, 12345}, {<<"name">>, <<"nimbo">>}], <<>>},
     ?assertMatch(Output, test_one_by_one(Decoder, Input1)).
 
 decode_header_test_() ->
