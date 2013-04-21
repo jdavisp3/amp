@@ -85,8 +85,8 @@ make_error(Key, Description) ->
 -spec encode_ask(Command::#amp_command{}, Id::binary(), Box::box()) -> binary().
 encode_ask(#amp_command{} = Command, Id, Box) ->
     [_ | _] = Box, % no empty boxes
-    encode_box([{?AMP_KEY_ASK, string, []},
-                {?AMP_KEY_COMMAND, string, []}
+    encode_box([{?AMP_KEY_ASK, binary, []},
+                {?AMP_KEY_COMMAND, binary, []}
                 | Command#amp_command.arguments],
                [{?AMP_KEY_ASK, Id},
                 {?AMP_KEY_COMMAND, Command#amp_command.name}
