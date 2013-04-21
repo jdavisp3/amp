@@ -78,8 +78,8 @@ make_error(Key, Description) ->
 -spec encode_ask(Command::#amp_command{}, Id::binary(), Box::box()) -> binary().
 encode_ask(#amp_command{} = Command, Id, Box) ->
     [_ | _] = Box, % no empty boxes
-    encode_box([{?AMP_KEY_ASK, binary, []},
-                {?AMP_KEY_COMMAND, binary, []}
+    encode_box([{?AMP_KEY_ASK, string, []},
+                {?AMP_KEY_COMMAND, string, []}
                 | Command#amp_command.arguments],
                [{?AMP_KEY_ASK, Id},
                 {?AMP_KEY_COMMAND, Command#amp_command.name}
@@ -93,7 +93,7 @@ encode_ask(#amp_command{} = Command, Id, Box) ->
                     Box::box()) -> binary().
 encode_answer(Command, Id, Box) ->
     [_ | _] = Box, % no empty boxes
-    encode_box([{?AMP_KEY_ANSWER, binary, []} | Command#amp_command.response],
+    encode_box([{?AMP_KEY_ANSWER, string, []} | Command#amp_command.response],
                [{?AMP_KEY_ANSWER, Id} | Box]).
 
 %% @doc Given an amp_command record, a message id, and a box, return a
@@ -155,7 +155,6 @@ decode_box(Decoder, Packet) when is_record(Decoder, decoder),
 %% Return a tuple indicating the type of incoming box and the Id for the
 %% message, plus the remaining bytes in the packet. The function will crash
 %% if the kvp has the wrong name.
-%%
 -spec decode_header(Packet::binary())
                    -> 'not_enough'
                           | {'ask' | 'answer' | 'error',
