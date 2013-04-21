@@ -199,7 +199,7 @@ encode_box(Protocol, Box) when is_list(Protocol), is_list(Box) ->
 
 % @private
 % @doc Encode the box according to the given protocol into the IOList.
--spec encode_box(Protocol::amp_list(), Box::box()) -> iolist().
+-spec encode_box_int(Protocol::amp_list(), Box::box()) -> iolist().
 encode_box_int([], _Box) ->
     [<<0, 0>>];
 encode_box_int([{Key, Type, Options} | Protocol], Box) ->
