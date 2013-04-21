@@ -409,11 +409,11 @@ encode_test_() ->
                    encode_box([{<<"a">>, {amplist, [{<<"b">>, integer, []}]}, []}],
                               [{<<"a">>, [[{<<"b">>, 5}], [{<<"b">>, 0}]]}])),
      ?_assertError(_, encode_box([{[256], string, []}], [{[256], "xyz"}])),
-     ?_assertError(_, encode_box([{"aa", string, []}], [{"aa", 1}])),
-     ?_assertError(_, encode_box([{"", string, []}], [{"", "a"}])),
-     ?_assertError(_, encode_box([{"aa", float, []}], [{"aa", "apple"}])),
-     ?_assertError(_, encode_box([{"b", integer, [optional]}], [{"a", 1}])),
-     ?_assertError(_, encode_box([{"b", integer, [optional]}], []))
+     ?_assertError(_, encode_box([{<<"aa">>, string, []}], [{<<"aa">>, 1}])),
+     ?_assertError(_, encode_box([{<<"">>, string, []}], [{<<"">>, "a"}])),
+     ?_assertError(_, encode_box([{<<"aa">>, float, []}], [{<<"aa">>, "apple"}])),
+     ?_assertError(_, encode_box([{<<"b">>, integer, [optional]}], [{<<"a">>, 1}])),
+     ?_assertError(_, encode_box([{<<"b">>, integer, [optional]}], []))
     ].
 
 encode_ask_test() ->
