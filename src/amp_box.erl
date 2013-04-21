@@ -19,12 +19,7 @@
 %%
 %% This module implements low-level encoding and decoding of AMP
 %% Boxes. An Amp Box is represented in Erlang as a list of key/value
-%% pairs. This type is referred to as a Box.
-%%
-%%    Box = [KVP]
-%%    KVP = {Key, Value}
-%%    Key = string()
-%%    Value = term()
+%% pairs.
 
 -module(amp_box).
 
@@ -127,8 +122,7 @@ encode_response(error, Command, Id, Box) ->
 
 %% @doc Return a new decoder object suitable for unserializing a wire
 %% format of an Amp box. Decoders are required arguments for decode_box/2.
-%%
-%% @spec new_decoder(Protocol::list()) -> decoder()
+-spec new_decoder(Protocol::amp_list()) -> #decoder{}.
 new_decoder(Protocol) when is_list(Protocol) ->
     [_ | _] = Protocol, % no empty boxes
     EmptyBin = <<>>,
@@ -205,7 +199,7 @@ encode_box(Protocol, Box) when is_list(Protocol), is_list(Box) ->
 
 % @private
 % @doc Encode the box according to the given protocol into the IOList.
-% @spec (Protocol::list(), Box::box()) -> iolist()
+-spec encode_box(Protocol::amp_list(), Box::box()) -> iolist().
 encode_box_int([], _Box) ->
     [<<0, 0>>];
 encode_box_int([{Key, Type, Options} | Protocol], Box) ->
