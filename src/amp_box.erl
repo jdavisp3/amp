@@ -118,9 +118,8 @@ encode_error(Command, Id, Box)
 %% @doc Given an amp_command record, a message id, and a box, return a
 %% binary encoding of the AmpBox that would implement the error box for
 %% a call.
-%%
-%% @spec encode_response(Response::atom(), Command::amp_record(),
-%%                       Id::string(), Box::box()) -> binary()
+-spec encode_response(Response::atom(), Command::#amp_command{},
+                      Id::binary(), Box::box()) -> binary().
 encode_response(answer, Command, Id, Box) ->
     encode_answer(Command, Id, Box);
 encode_response(error, Command, Id, Box) ->
