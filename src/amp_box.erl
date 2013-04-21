@@ -188,9 +188,8 @@ decode_command_header(Packet) when is_binary(Packet) ->
 
 %% @doc Given an AmpList protocol and a box, return a binary encoding
 %% of the box that matches the protocol.
-%%
 -spec encode_box(Protocol::amp_list(), Box::box()) -> binary().
-encode_box(Protocol, Box) when is_list(Protocol), is_list(Box) ->
+encode_box(Protocol, Box) ->
     IOList = encode_box_int(Protocol, Box),
     [_, _ | _] = IOList, % no empty boxes
     list_to_binary(IOList).
@@ -296,7 +295,7 @@ encode_value(Value, {amplist, Protocol}) ->
 
 % @private
 % @doc Decode a value in binary form given its type.
--spec decode_value(ValBin::binary(), Type::atom()) -> term().
+-spec decode_value(ValBin::binary(), Type::amp_name()) -> term().
 decode_value(ValBin, integer) ->
     erlang:list_to_integer(erlang:binary_to_list(ValBin));
 decode_value(ValBin, float) ->
@@ -349,8 +348,8 @@ box_type(?AMP_KEY_ERROR) ->
 
 
 % @private
-% @doc Return the string encoding of an error given its atom key.
--spec error_name(Key::atom(), Command::#amp_command{}) -> Name::amp_name().
+% @doc Return the binary encoding of an error given its atom key.
+-spec error_name(Key::atom(), Command::#amp_command{}) -> Name::binary().
 error_name(Key, Command) ->
     {value, {_, Name, _Options}} = lists:keysearch(Key, 1,
                                                    Command#amp_command.errors),
