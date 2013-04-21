@@ -480,16 +480,18 @@ decode_1_test() ->
     ?assert(Decoder3#decoder.box == []).
 
 decode_2_test() ->
-    Protocol = [{"a", integer, []}],
+    Protocol = [{<<"a">>, integer, []}],
     Decoder = new_decoder(Protocol),
     Input = <<0, 1, $a, 0, 1, $1, 0, 0>>,
-    ?assertMatch({done, [{"a", 1}], <<>>}, decode_box(Decoder, Input)).
+    ?assertMatch({done, [{<<"a">>, 1}], <<>>},
+                 decode_box(Decoder, Input)).
 
 decode_3_test() ->
-    Protocol = [{"a", integer, []}],
+    Protocol = [{<<"a">>, integer, []}],
     Decoder = new_decoder(Protocol),
     Input = <<0, 1, $a, 0, 1, $4, 0, 0, 14>>,
-    ?assertMatch({done, [{"a", 4}], <<14>>}, decode_box(Decoder, Input)).
+    ?assertMatch({done, [{<<"a">>, 4}], <<14>>},
+                 decode_box(Decoder, Input)).
 
 decode_4_test() ->
     Protocol = [{<<"name">>, string, []},
