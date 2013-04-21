@@ -132,11 +132,9 @@ new_decoder(Protocol) when is_list(Protocol) ->
 %% If the complete box is decoded, return the box we decoded and the
 %% unprocessed bytes. If we are not done, return the new state of the
 %% decoder.
-%%
-%% @spec (Decoder::decoder(), Packet::binary()) -> Result
-%%
-%%        Result = {not_done, decoder()} |
-%%                 {done, Box::box(), Rest::binary()}
+-spec decode_box(Decoder::#decoder{}, Packet::binary()) ->
+                        {not_done, #decoder{}} |
+                        {done, Box::box(), Rest::binary()}.
 decode_box(Decoder, Packet) when is_record(Decoder, decoder),
                                  is_binary(Packet) ->
     Whole = erlang:list_to_binary([Decoder#decoder.remainder, Packet]),
