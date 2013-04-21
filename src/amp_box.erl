@@ -72,7 +72,6 @@
 %% @doc Given an error atom key and a binary description, return a box
 %% that can be returned by an ask handler as the error information for
 %% an error response.
-%%
 -spec make_error(Key::amp_name(), Description::binary()) -> box().
 make_error(Key, Description) ->
     [{?AMP_KEY_ERROR_CODE, Key},
@@ -81,7 +80,6 @@ make_error(Key, Description) ->
 
 %% @doc Given an amp_command record, a message id, and a box, return a
 %% binary encoding of the Amp Box that would implement the call.
-%%
 -spec encode_ask(Command::#amp_command{}, Id::binary(), Box::box()) -> binary().
 encode_ask(#amp_command{} = Command, Id, Box) ->
     [_ | _] = Box, % no empty boxes
@@ -106,9 +104,8 @@ encode_answer(Command, Id, Box) ->
 %% @doc Given an amp_command record, a message id, and a box, return a
 %% binary encoding of the Amp Box that would implement the error box for
 %% a call.
-%%
-%% @spec encode_error(Command::amp_record(), Id::string(),
-%%                    Box::box()) -> binary()
+-spec encode_error(Command::#amp_command{}, Id::binary(),
+                   Box::box()) -> binary().
 encode_error(Command, Id, Box)
   when is_record(Command, amp_command), is_list(Id), is_list(Box) ->
     {value, {_, ErrorKey}} = lists:keysearch(?AMP_KEY_ERROR_CODE, 1, Box),
