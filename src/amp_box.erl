@@ -350,8 +350,8 @@ box_type(?AMP_KEY_ERROR) ->
 
 
 % @private
-% @spec (Key::atom(), Command::amp_command()) -> Name::string()
 % @doc Return the string encoding of an error given its atom key.
+-spec error_name(Key::atom(), Command::#amp_command{}) -> Name::amp_name().
 error_name(Key, Command) ->
     {value, {_, Name, _Options}} = lists:keysearch(Key, 1,
                                                    Command#amp_command.errors),
