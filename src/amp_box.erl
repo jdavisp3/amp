@@ -601,12 +601,13 @@ decode_header_test_() ->
     [
      ?_assertMatch(not_enough, decode_header(<<>>)),
      ?_assertMatch(not_enough, decode_header(<<0, 4, "_ask">>)),
-     ?_assertMatch({ask, "a", <<>>}, decode_header(<<0, 4, "_ask", 0, 1, $a>>)),
-     ?_assertMatch({ask, "a", <<9>>},
+     ?_assertMatch({ask, <<"a">>, <<>>},
+                   decode_header(<<0, 4, "_ask", 0, 1, $a>>)),
+     ?_assertMatch({ask, <<"a">>, <<9>>},
                    decode_header(<<0, 4, "_ask", 0, 1, $a, 9>>)),
-     ?_assertMatch({answer, "a", <<>>},
+     ?_assertMatch({answer, <<"a">>, <<>>},
                    decode_header(<<0, 7, "_answer", 0, 1, $a>>)),
-     ?_assertMatch({error, "a", <<>>},
+     ?_assertMatch({error, <<"a">>, <<>>},
                    decode_header(<<0, 6, "_error", 0, 1, $a>>)),
      ?_assertError(_, decode_header(<<0, 4, "_bad", 0, 1, $a>>))
      ].
