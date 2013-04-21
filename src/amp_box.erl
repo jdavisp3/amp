@@ -316,8 +316,8 @@ decode_value(ValBin, {amplist, Protocol}) ->
 
 
 % @private
-% @spec (ValBin::binary(), Protocol::list()) -> list()
 % @doc Decode an amplist value and return the list of boxes (kvpair lists).
+-spec decode_amplist(ValBin::binary(), Protocol::amp_list()) -> [box()].
 decode_amplist(<<>>, _Protocol) ->
     [];
 decode_amplist(ValBin, Protocol) ->
