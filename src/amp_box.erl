@@ -60,7 +60,7 @@
 -define(AMP_ERROR_PROTOCOL, [{?AMP_KEY_ERROR_CODE, string, []},
                              {?AMP_KEY_ERROR_DESCRIPTION, string, []}]).
 
--type kvp() :: {amp_name(), term()}.
+-type kvp() :: {binary(), term()}.
 -type box() :: [kvp()].
 
 
