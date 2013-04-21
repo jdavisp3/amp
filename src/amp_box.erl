@@ -101,8 +101,7 @@ encode_answer(Command, Id, Box) ->
 %% a call.
 -spec encode_error(Command::#amp_command{}, Id::binary(),
                    Box::box()) -> binary().
-encode_error(Command, Id, Box)
-  when is_record(Command, amp_command), is_list(Id), is_list(Box) ->
+encode_error(Command, Id, Box) ->
     {value, {_, ErrorKey}} = lists:keysearch(?AMP_KEY_ERROR_CODE, 1, Box),
     Box2 = lists:keyreplace(?AMP_KEY_ERROR_CODE, 1, Box,
                             {?AMP_KEY_ERROR_CODE,
