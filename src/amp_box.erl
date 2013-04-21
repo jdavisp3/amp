@@ -530,20 +530,25 @@ decode_8_test() ->
     ?assertMatch({done, [{";", 1.5}], <<1, 2, 3>>}, decode_box(Decoder, Input)).
 
 decode_9_test() ->
-    Protocol = [{"//", boolean, []}],
+    Protocol = [{<<"//">>, boolean, []}],
     Decoder = new_decoder(Protocol),
     Input1 = <<0, 2, "//", 0, 4, "True", 0, 0>>,
-    ?assertMatch({done, [{"//", true}], <<>>}, decode_box(Decoder, Input1)),
+    ?assertMatch({done, [{<<"//">>, true}], <<>>},
+                 decode_box(Decoder, Input1)),
     Input2 = <<0, 2, "//", 0, 5, "False", 0, 0>>,
-    ?assertMatch({done, [{"//", false}], <<>>}, decode_box(Decoder, Input2)).
+    ?assertMatch({done, [{<<"//">>, false}], <<>>},
+                 decode_box(Decoder, Input2)).
 
 decode_10_test() ->
-    Protocol = [{"a", integer, [optional]}, {"b", integer, []}],
+    Protocol = [{<<"a">>, integer, [optional]},
+                {<<"b">>, integer, []}],
     Decoder = new_decoder(Protocol),
     Input1 = <<0, 1, $a, 0, 1, $4, 0, 1, $b, 0, 1, $5, 0, 0>>,
-    ?assertMatch({done, [{"a", 4}, {"b", 5}], <<>>}, decode_box(Decoder, Input1)),
+    ?assertMatch({done, [{<<"a">>, 4}, {<<"b">>, 5}], <<>>},
+                 decode_box(Decoder, Input1)),
     Input2 = <<0, 1, $b, 0, 1, $5, 0, 0>>,
-    ?assertMatch({done, [{"b", 5}], <<>>}, decode_box(Decoder, Input2)).
+    ?assertMatch({done, [{<<"b">>, 5}], <<>>},
+                 decode_box(Decoder, Input2)).
 
 decode_11_test() ->
     Protocol = [{<<"a">>, integer, []},
