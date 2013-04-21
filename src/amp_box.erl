@@ -266,8 +266,8 @@ consume_key(Key, Protocol) ->
 
 
 % @private
-% @spec (Length::integer(), Max::integer()) -> binary()
 % @doc Encode a length, given the maximum value of that length.
+-spec encode_length(Length::non_neg_integer(), Max::integer()) -> binary().
 encode_length(Length, Max) when Length =< Max ->
     <<Length:16/unsigned-big>>.
 
