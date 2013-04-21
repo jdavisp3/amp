@@ -274,8 +274,8 @@ encode_length(Length, Max) when Length =< Max ->
 
 
 % @private
-% @spec (Value::term(), Type::atom()) -> iolist()
 % @doc Encode a value given its type into an iolist.
+-spec encode_value(Value::term(), Type::atom()) -> iolist().
 encode_value(Value, integer) when is_integer(Value) ->
     integer_to_list(Value);
 encode_value(Value, float) when is_float(Value) ->
