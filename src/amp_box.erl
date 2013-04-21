@@ -173,16 +173,15 @@ decode_header(Packet) when is_binary(Packet) ->
 %% @doc Match a key/value pair encoding the command name of an ask box.
 %% Return a tuple with the command name and the remaining bytes in the
 %% packet. The function will crash if the kvp was the wrong name.
-%%
-%% @spec (Packet::binary()) -> Result
-%%
-%%        Result = not_enough | {CommandName::string(), Remaining::binary()}
+-spec decode_command_header(Packet::binary())
+                           -> not_enough
+                                  | {CommandName::binary(), Remaining::binary()}.
 decode_command_header(Packet) when is_binary(Packet) ->
     case match_kvp(Packet) of
         not_enough ->
             not_enough;
         {?AMP_KEY_COMMAND, ValBin, Remaining} ->
-            CommandName = decode_value(ValBin, string),
+            CommandName = decode_value(ValBin, binary),
             {CommandName, Remaining}
     end.
 
