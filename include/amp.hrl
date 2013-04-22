@@ -21,16 +21,6 @@
 %%   errors: the valid list of errors from the command
 %%   options: list of protocol options
 %%
-%%   AmpList = [{AmpKey, AmpType, Options}, ...]
-%%   AmpKey = binary() (max 255 length)
-%%   AmpType = string | binary | integer | float | boolean | {amplist, AmpList}
-%%   Options = [Option]
-%%   Option = optional
-%%
-%%   AmpErrorList = [{atom(), binary(), ErrorOptions}, ...]
-%%   ErrorOptions = [ErrorOption]
-%%   ErrorOption = fatal
-%%
 %% The atom names of the AmpType enumeration have been chosen
 %% to match the names used in the Twisted Python implementation
 %% of Amp, with one addition (see below). This means that the
