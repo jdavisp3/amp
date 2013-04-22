@@ -67,7 +67,7 @@
 %% @doc Given an error atom key and a binary description, return a box
 %% that can be returned by an ask handler as the error information for
 %% an error response.
--spec make_error(Key::amp_name(), Description::binary()) -> box().
+-spec make_error(Key::atom(), Description::binary()) -> box().
 make_error(Key, Description) ->
     [{?AMP_KEY_ERROR_CODE, Key},
      {?AMP_KEY_ERROR_DESCRIPTION, Description}].
