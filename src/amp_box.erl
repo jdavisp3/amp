@@ -60,8 +60,8 @@
 -define(AMP_ERROR_PROTOCOL, [{?AMP_KEY_ERROR_CODE, string, []},
                              {?AMP_KEY_ERROR_DESCRIPTION, string, []}]).
 
--type kvp() :: {binary(), term()}.
 -type box() :: [kvp()].
+-type kvp() :: {binary(), term()}.
 
 
 %% @doc Given an error atom key and a binary description, return a box
