@@ -407,8 +407,8 @@ encode_answer_test() ->
 
 encode_error_test() ->
     Cmd = #amp_command{arguments=nil, response=nil,
-                       errors=[{a, <<"A">>, []},
-                               {b, <<"B">>, [fatal]}]},
+                       errors=[{<<"A">>, []},
+                               {<<"B">>, [fatal]}]},
     Err1 = make_error(<<"A">>, <<"AA">>),
     Bin1 = encode_response(error, Cmd, "1", Err1),
     ?assertMatch(Bin1, <<0, 6, "_error", 0, 1, "1",
