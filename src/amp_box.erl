@@ -102,12 +102,10 @@ encode_answer(Command, Id, Box) ->
 -spec encode_error(Command::#amp_command{}, Id::binary(),
                    Box::box()) -> binary().
 encode_error(Command, Id, Box) ->
-    {value, {_, ErrorKey}} = lists:keysearch(?AMP_KEY_ERROR_CODE, 1, Box),
-    Box2 = lists:keyreplace(?AMP_KEY_ERROR_CODE, 1, Box,
-                            {?AMP_KEY_ERROR_CODE,
-                             error_name(ErrorKey, Command)}),
+    {value, {_, ErrorCode}} = lists:keysearch(?AMP_KEY_ERROR_CODE, 1, Box),
+    {value, _} = lists:keysearch(ErrorCode, 1, Command#amp_command.errors),
     encode_box([{?AMP_KEY_ERROR, string, []} | ?AMP_ERROR_PROTOCOL],
-               [{?AMP_KEY_ERROR, Id} | Box2]).
+               [{?AMP_KEY_ERROR, Id} | Box]).
 
 %% @doc Given an amp_command record, a message id, and a box, return a
 %% binary encoding of the AmpBox that would implement the error box for
