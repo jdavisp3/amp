@@ -410,7 +410,7 @@ encode_error_test() ->
                        errors=[{<<"A">>, []},
                                {<<"B">>, [fatal]}]},
     Err1 = make_error(<<"A">>, <<"AA">>),
-    Bin1 = encode_response(error, Cmd, "1", Err1),
+    Bin1 = encode_error(Cmd, "1", Err1),
     ?assertMatch(Bin1, <<0, 6, "_error", 0, 1, "1",
                          0, 11, "_error_code", 0, 1, "A",
                          0, 18, "_error_description", 0, 2, "AA", 0, 0>>),
@@ -421,7 +421,7 @@ encode_error_test() ->
     ?assertMatch(Out1, decode_box(Decoder, Rest1)),
 
     Err2 = make_error(<<"B">>, <<"BB">>),
-    Bin2 = encode_response(error, Cmd, "2", Err2),
+    Bin2 = encode_error(Cmd, "2", Err2),
     {error, <<"2">>, Rest2} = decode_header(Bin2),
     Out2 = {done, [{?AMP_KEY_ERROR_CODE, "B"},
                    {?AMP_KEY_ERROR_DESCRIPTION, "BB"}], <<>>},
