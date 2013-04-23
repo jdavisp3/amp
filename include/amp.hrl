@@ -42,9 +42,6 @@
 %% not currently supported by the library. For example, by using the
 %% binary type, Amp unicode values will be received as utf-8 encoded
 %% Erlang binaries.
-%%
-%% Each tuple in an error list specifies a mapping between an atom and
-%% a binary error code.
 
 -type amp_type() :: 'string' | 'binary' | 'integer' | 'float' | 'boolean'
                   | {amplist, amp_list()}.
@@ -52,7 +49,7 @@
 -type amp_name() :: binary().
 -type amp_option() :: 'optional'.
 
--type amp_error() :: {atom(), amp_name(), [amp_error_option()]}.
+-type amp_error() :: {amp_name(), [amp_error_option()]}.
 -type amp_error_option() :: 'fatal'.
 
 -type amp_command_option() :: 'requires_answer'.

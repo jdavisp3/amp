@@ -64,12 +64,12 @@
 -type kvp() :: {binary(), term()}.
 
 
-%% @doc Given an error atom key and a binary description, return a box
+%% @doc Given an error code and a binary description, return a box
 %% that can be returned by an ask handler as the error information for
 %% an error response.
--spec make_error(Key::atom(), Description::binary()) -> box().
-make_error(Key, Description) ->
-    [{?AMP_KEY_ERROR_CODE, Key},
+-spec make_error(ErrorCode::amp_name(), Description::binary()) -> box().
+make_error(ErrorCode, Description) ->
+    [{?AMP_KEY_ERROR_CODE, ErrorCode},
      {?AMP_KEY_ERROR_DESCRIPTION, Description}].
 
 
@@ -340,15 +340,6 @@ box_type(?AMP_KEY_ANSWER) ->
     answer;
 box_type(?AMP_KEY_ERROR) ->
     error.
-
-
-% @private
-% @doc Return the binary encoding of an error given its atom key.
--spec error_name(Key::atom(), Command::#amp_command{}) -> Name::binary().
-error_name(Key, Command) ->
-    {value, {_, Name, _Options}} = lists:keysearch(Key, 1,
-                                                   Command#amp_command.errors),
-    Name.
 
 
 % Tests
