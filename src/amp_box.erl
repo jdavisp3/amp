@@ -123,7 +123,8 @@ new_decoder(Protocol) ->
                         {not_done, #decoder{}} |
                         {done, Box::box(), Rest::binary()}.
 decode_box(Decoder, Packet) ->
-    Whole = erlang:list_to_binary([Decoder#decoder.remainder, Packet]),
+    Remainder = Decoder#decoder.remainder,
+    Whole = <<Remainder/binary, Packet/binary>>,
     Result = decode_box(Decoder#decoder.protocol,
                         Decoder#decoder.box, Whole),
     case Result of
