@@ -26,7 +26,6 @@
 %% API
 -export([make_error/2,
          encode_ask/3, encode_answer/3, encode_error/3,
-         encode_response/4,
          new_decoder/1, decode_box/2,
          decode_header/1, decode_command_header/1,
          encode_box/2]).
@@ -107,15 +106,6 @@ encode_error(Command, Id, Box) ->
     encode_box([{?AMP_KEY_ERROR, string, []} | ?AMP_ERROR_PROTOCOL],
                [{?AMP_KEY_ERROR, Id} | Box]).
 
-%% @doc Given an amp_command record, a message id, and a box, return a
-%% binary encoding of the AmpBox that would implement the error box for
-%% a call.
--spec encode_response(Response::atom(), Command::#amp_command{},
-                      Id::binary(), Box::box()) -> binary().
-encode_response(answer, Command, Id, Box) ->
-    encode_answer(Command, Id, Box);
-encode_response(error, Command, Id, Box) ->
-    encode_error(Command, Id, Box).
 
 %% @doc Return a new decoder object suitable for unserializing a wire
 %% format of an Amp box. Decoders are required arguments for decode_box/2.
