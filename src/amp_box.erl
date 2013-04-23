@@ -24,8 +24,7 @@
 -module(amp_box).
 
 %% API
--export([make_error/2,
-         encode_ask/3, encode_answer/3, encode_error/4,
+-export([encode_ask/3, encode_answer/3, encode_error/4,
          new_decoder/1, decode_box/2,
          decode_header/1, decode_command_header/1,
          encode_box/2]).
@@ -61,15 +60,6 @@
 
 -type box() :: [kvp()].
 -type kvp() :: {binary(), term()}.
-
-
-%% @doc Given an error code and a binary description, return a box
-%% that can be returned by an ask handler as the error information for
-%% an error response.
--spec make_error(ErrorCode::amp_name(), Description::binary()) -> box().
-make_error(ErrorCode, Description) ->
-    [{?AMP_KEY_ERROR_CODE, ErrorCode},
-     {?AMP_KEY_ERROR_DESCRIPTION, Description}].
 
 
 %% @doc Given an amp_command record, a message id, and a box, return a
