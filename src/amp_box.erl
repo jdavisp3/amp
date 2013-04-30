@@ -379,7 +379,13 @@ encode_ask_test() ->
     ?assertMatch(Bin, <<0, 4, "_ask", 0, 1, "1",
                         0, 8, "_command", 0, 1, "n",
                         0, 1, "a", 0, 1, "A", 0, 0>>),
-    ?assertMatch({ask, <<"1">>, _}, decode_header(Bin)).
+    ?assertMatch({ask, <<"1">>,
+                  <<0, 8, "_command", 0, 1, "n",
+                    0, 1, "a", 0, 1, "A", 0, 0>>},
+                 decode_header(Bin)),
+    ?assertMatch({<<"n">>, <<0, 1, "a", 0, 1, "A", 0, 0>>},
+                 decode_command_header(<<0, 8, "_command", 0, 1, "n",
+                                         0, 1, "a", 0, 1, "A", 0, 0>>)).
 
 encode_answer_test() ->
     Cmd = #amp_command{name = <<"n">>, arguments=nil,
