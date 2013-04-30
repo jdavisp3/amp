@@ -344,6 +344,8 @@ encode_test_() ->
                    encode_box([{<<"aa">>, binary, []}], [{<<"aa">>, <<"xyz">>}])),
      ?_assertMatch(<<0, 2, $a, $a, 0, 26, "1.50000000000000000000e+00", 0, 0>>,
                    encode_box([{<<"aa">>, float, []}], [{<<"aa">>, 1.5}])),
+     ?_assertMatch(<<0, 2, $a, $a, 0, 26, "1.00000000000000000000e+00", 0, 0>>,
+                   encode_box([{<<"aa">>, float, []}], [{<<"aa">>, 1}])),
      ?_assertMatch(<<0, 1, $a, 0, 4, "True", 0, 0>>,
                    encode_box([{<<"a">>, boolean, []}], [{<<"a">>, true}])),
      ?_assertMatch(<<0, 1, $a, 0, 5, "False", 0, 0>>,
