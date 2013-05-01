@@ -35,3 +35,8 @@
         | {ok, state(), handler_opts()}
         | {answer, Response::list(), state()}
         | {shutdown, state()}.
+
+-callback amp_handle_info(Msg::any(), state()) ->
+          {ok, state()}
+        | {ok, state(), handler_opts()}
+        | {shutdown, state()}.
