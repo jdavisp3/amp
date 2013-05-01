@@ -54,8 +54,6 @@
 
 -type amp_command_option() :: 'requires_answer'.
 
--opaque amp_command() :: any().
-
 -record(amp_command, {
           name :: amp_name(),
           arguments = [] :: [amp_type()],
@@ -63,3 +61,5 @@
           errors = [] :: [amp_error()],
           options = [requires_answer] :: [amp_command_option()]
          }).
+
+-opaque amp_command() :: #amp_command{}.
