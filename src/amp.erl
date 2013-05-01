@@ -12,8 +12,8 @@
 %% ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 %% OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 %%
-%% The amp_command record represents an AMP call/response
-%% protocol. The fields are as follows:
+%% The amp_command() type represents an AMP call/response
+%% protocol. It is constructed from the following components:
 %%
 %%   name: the name of the amp command
 %%   arguments: the valid list of arguments of the command
@@ -43,23 +43,13 @@
 %% binary type, Amp unicode values will be received as utf-8 encoded
 %% Erlang binaries.
 
--type amp_type() :: 'string' | 'binary' | 'integer' | 'float' | 'boolean'
-                  | {'amplist', amp_list()}.
--type amp_list() :: [{amp_name(), amp_type(), [amp_option()]}].
--type amp_name() :: binary().
--type amp_option() :: 'optional'.
+-module(amp).
 
--type amp_error() :: {amp_name(), [amp_error_option()]}.
--type amp_error_option() :: 'fatal'.
+-export([new_command/5]).
 
--type amp_command_option() :: 'requires_answer'.
+-include("amp.hrl").
 
--opaque amp_command() :: any().
 
--record(amp_command, {
-          name :: amp_name(),
-          arguments = [] :: [amp_type()],
-          response = [] :: [amp_type()],
-          errors = [] :: [amp_error()],
-          options = [requires_answer] :: [amp_command_option()]
-         }).
+new_command(Name, Arguments, Response, Errors, Options) ->
+    #amp_command{name=Name, arguments=Arguments, response=Response,
+                 errors=Errors, options=Options}.
