@@ -16,6 +16,7 @@
 
 -type opts() :: any().
 -type state() :: any().
+-type from() :: any().
 -type handler_opts() :: [hibernate | timeout()].
 -type terminate_reason() :: {normal, shutdown}
                           | {normal, timeout}
@@ -29,7 +30,13 @@
         | {ok, state(), handler_opts()}
         | shutdown.
 
--callback amp_handle_ask(Name::binary(), Args::list(), state()) ->
+-callback amp_handle_ask(Name::binary(), Args::list(), from(), state()) ->
+          {ok, state()}
+        | {ok, state(), handler_opts()}
+        | {answer, Response::list(), state()}
+        | {shutdown, state()}.
+
+-callback amp_handle_response(answer | error, reference(), amp_box:box(), state()) ->
           {ok, state()}
         | {ok, state(), handler_opts()}
         | {answer, Response::list(), state()}
