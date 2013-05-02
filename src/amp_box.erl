@@ -214,9 +214,9 @@ decode_box(Protocol, Box, Packet) ->
 % Return a tuple with the key name, the value still encoded as a binary,
 % and the remaining bytes from Packet that were not used in the kvp. Or,
 % if there are not enough bytes to decode the first kvp, return not_enough.
--spec match_kvp(Packet::binary()) -> {Key::amp_name(),
-                                      ValBin::binary(),
-                                      Rest::binary()} | 'not_enough'.
+-spec match_kvp(binary()) -> {Key::amp_command:amp_name(),
+                              ValBin::binary(),
+                              Rest::binary()} | 'not_enough'.
 match_kvp(<<0, KeyLen, Key:KeyLen/binary,
             ValLen:16/unsigned-big, Val:ValLen/binary, Rest/binary>>) ->
     {Key, Val, Rest};
@@ -229,8 +229,8 @@ match_kvp(<<>>) ->
 % @private
 % @doc Consume the given key from the Protocol and return the
 % type of that key and the remaining protocol.
--spec consume_key(Key::binary(), Protocol::amp_list()) ->
-                         {Type::amp_type(), NewProtocol::amp_list()}.
+-spec consume_key(binary(), amp_list()) ->
+                         {amp_type(), amp_list()}.
 consume_key(Key, Protocol) ->
     {value, {Key, Type, _Options}, Protocol2} = lists:keytake(Key, 1, Protocol),
     {Type, Protocol2}.
