@@ -76,20 +76,20 @@ encode_ask(Command, Id, Box) ->
 %% @doc Given an amp_command record, a message id, and a box, return a
 %% binary encoding of the AmpBox that would implement the answer box for
 %% a call.
--spec encode_answer(Command::#amp_command{}, Id::binary(),
-                    Box::box()) -> binary().
+-spec encode_answer(amp_command:amp_command(), binary(),
+                    box()) -> binary().
 encode_answer(Command, Id, Box) ->
     [_ | _] = Box, % no empty boxes
-    encode_box([{?AMP_KEY_ANSWER, string, []} | Command#amp_command.response],
+    encode_box([{?AMP_KEY_ANSWER, string, []} | amp_command:response(Command)],
                [{?AMP_KEY_ANSWER, Id} | Box]).
 
 %% @doc Given an amp_command record, a message id, and an error code,
 %% and a description, return a binary encoding of the Amp Box that
 %% would implement the error box for a call.
--spec encode_error(Command::#amp_command{}, Id::binary(),
-                   ErrorCode::binary(), Description::binary()) -> binary().
+-spec encode_error(amp_command:amp_command(), binary(),
+                   binary(), binary()) -> binary().
 encode_error(Command, Id, ErrorCode, Description) ->
-    {value, _} = lists:keysearch(ErrorCode, 1, Command#amp_command.errors),
+    {value, _} = lists:keysearch(ErrorCode, 1, amp_command:errors(Command)),
     encode_box([{?AMP_KEY_ERROR, string, []} | ?AMP_ERROR_PROTOCOL],
                [{?AMP_KEY_ERROR, Id},
                 {?AMP_KEY_ERROR_CODE, ErrorCode},
@@ -98,7 +98,7 @@ encode_error(Command, Id, ErrorCode, Description) ->
 
 %% @doc Return a new decoder object suitable for unserializing a wire
 %% format of an Amp box. Decoders are required arguments for decode_box/2.
--spec new_decoder(Protocol::amp_list()) -> #decoder{}.
+-spec new_decoder(amp_list()) -> #decoder{}.
 new_decoder(Protocol) ->
     [_ | _] = Protocol, % no empty boxes
     EmptyBin = <<>>,
