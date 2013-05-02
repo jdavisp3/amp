@@ -45,7 +45,7 @@
 
 -module(amp_command).
 
--export([new/1, new/2, new/5]).
+-export([new/5]).
 -export([name/1, arguments/1, response/1, errors/1, options/1]).
 
 -export_type([amp_type/0, amp_list/0, amp_name/0,
@@ -73,12 +73,6 @@
 
 -opaque amp_command() :: #amp_command{}.
 
-
-new(Name) ->
-    #amp_command{name=Name}.
-
-new(Name, Arguments) ->
-    #amp_command{name=Name, arguments=Arguments}.
 
 new(Name, Arguments, Response, Errors, Options) ->
     #amp_command{name=Name, arguments=Arguments, response=Response,

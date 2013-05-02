@@ -371,7 +371,7 @@ encode_test_() ->
     ].
 
 encode_ask_test() ->
-    Cmd = amp_command:new(<<"n">>, [{<<"a">>, string, []}]),
+    Cmd = amp_command:new(<<"n">>, [{<<"a">>, string, []}], nil, nil, []),
     Bin = encode_ask(Cmd, <<"1">>, [{<<"a">>, "A"}]),
     ?assertMatch(Bin, <<0, 4, "_ask", 0, 1, "1",
                         0, 8, "_command", 0, 1, "n",
