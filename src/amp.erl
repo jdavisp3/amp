@@ -44,12 +44,3 @@
 %% Erlang binaries.
 
 -module(amp).
-
--export([new_command/5]).
-
--include("amp.hrl").
-
-
-new_command(Name, Arguments, Response, Errors, Options) ->
-    #amp_command{name=Name, arguments=Arguments, response=Response,
-                 errors=Errors, options=Options}.
