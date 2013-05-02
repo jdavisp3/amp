@@ -298,7 +298,7 @@ decode_amplist(ValBin, Protocol) ->
 % @private
 % @doc Return the original string, if it has a decimal point,
 % or the original string followed by .0 if not.
--spec ensure_decimal(String::string()) -> string().
+-spec ensure_decimal(string()) -> string().
 ensure_decimal(String) ->
     case lists:member($., String) of
         true ->
@@ -310,7 +310,7 @@ ensure_decimal(String) ->
 
 % @private
 % @doc Return a box type atom given the key.
--spec box_type(Key::binary()) -> atom().
+-spec box_type(binary()) -> atom().
 box_type(?AMP_KEY_ASK) ->
     ask;
 box_type(?AMP_KEY_ANSWER) ->
