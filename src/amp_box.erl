@@ -161,7 +161,7 @@ decode_command_header(Packet) ->
 
 %% @doc Given an AmpList protocol and a box, return a binary encoding
 %% of the box that matches the protocol.
--spec encode_box(amp_list(), box()) -> binary().
+-spec encode_box(amp_command:amp_list(), box()) -> binary().
 encode_box(Protocol, Box) ->
     IOList = encode_box_int(Protocol, Box),
     [_, _ | _] = IOList, % no empty boxes
@@ -170,7 +170,7 @@ encode_box(Protocol, Box) ->
 
 % @private
 % @doc Encode the box according to the given protocol into the IOList.
--spec encode_box_int(amp_list(), box()) -> iolist().
+-spec encode_box_int(amp_command:amp_list(), box()) -> iolist().
 encode_box_int([], _Box) ->
     [<<0, 0>>];
 encode_box_int([{Key, Type, Options} | Protocol], Box) ->
@@ -189,9 +189,9 @@ encode_box_int([{Key, Type, Options} | Protocol], Box) ->
 
 % @private
 % @doc Decode the packet as much as possible and return the results.
--spec decode_box(amp_list(), box(), binary()) ->
-                        {not_done, amp_list(), box(), Rest::binary()} |
-                        {done, box(), Rest::binary()}.
+-spec decode_box(amp_command:amp_list(), box(), binary()) ->
+                        {not_done, amp_command:amp_list(), box(), Rest::binary()}
+                            | {done, box(), Rest::binary()}.
 decode_box(Protocol, Box, Packet) when size(Packet) < 2 ->
     {not_done, Protocol, Box, Packet};
 decode_box([], Box, <<0, 0, Rest/binary>>) ->
