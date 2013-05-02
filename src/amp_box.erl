@@ -108,9 +108,9 @@ new_decoder(Protocol) ->
 %% If the complete box is decoded, return the box we decoded and the
 %% unprocessed bytes. If we are not done, return the new state of the
 %% decoder.
--spec decode_box(Decoder::#decoder{}, Packet::binary()) ->
+-spec decode_box(#decoder{}, binary()) ->
                         {not_done, #decoder{}} |
-                        {done, Box::box(), Rest::binary()}.
+                        {done, box(), Rest::binary()}.
 decode_box(Decoder, Packet) ->
     Remainder = Decoder#decoder.remainder,
     Whole = <<Remainder/binary, Packet/binary>>,
@@ -129,7 +129,7 @@ decode_box(Decoder, Packet) ->
 %% Return a tuple indicating the type of incoming box and the Id for the
 %% message, plus the remaining bytes in the packet. The function will crash
 %% if the kvp has the wrong name.
--spec decode_header(Packet::binary())
+-spec decode_header(binary())
                    -> 'not_enough'
                           | {'ask' | 'answer' | 'error',
                              Id::binary(),
@@ -147,7 +147,7 @@ decode_header(Packet) ->
 %% @doc Match a key/value pair encoding the command name of an ask box.
 %% Return a tuple with the command name and the remaining bytes in the
 %% packet. The function will crash if the kvp was the wrong name.
--spec decode_command_header(Packet::binary())
+-spec decode_command_header(binary())
                            -> not_enough
                                   | {CommandName::binary(), Remaining::binary()}.
 decode_command_header(Packet) ->
@@ -161,7 +161,7 @@ decode_command_header(Packet) ->
 
 %% @doc Given an AmpList protocol and a box, return a binary encoding
 %% of the box that matches the protocol.
--spec encode_box(Protocol::amp_list(), Box::box()) -> binary().
+-spec encode_box(amp_list(), box()) -> binary().
 encode_box(Protocol, Box) ->
     IOList = encode_box_int(Protocol, Box),
     [_, _ | _] = IOList, % no empty boxes
@@ -170,7 +170,7 @@ encode_box(Protocol, Box) ->
 
 % @private
 % @doc Encode the box according to the given protocol into the IOList.
--spec encode_box_int(Protocol::amp_list(), Box::box()) -> iolist().
+-spec encode_box_int(amp_list(), box()) -> iolist().
 encode_box_int([], _Box) ->
     [<<0, 0>>];
 encode_box_int([{Key, Type, Options} | Protocol], Box) ->
@@ -189,7 +189,7 @@ encode_box_int([{Key, Type, Options} | Protocol], Box) ->
 
 % @private
 % @doc Decode the packet as much as possible and return the results.
--spec decode_box(Protocol::amp_list(), Box::box(), Packet::binary()) ->
+-spec decode_box(amp_list(), box(), binary()) ->
                         {not_done, amp_list(), box(), Rest::binary()} |
                         {done, box(), Rest::binary()}.
 decode_box(Protocol, Box, Packet) when size(Packet) < 2 ->
