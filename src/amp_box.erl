@@ -238,15 +238,14 @@ consume_key(Key, Protocol) ->
 
 % @private
 % @doc Encode a length, given the maximum value of that length.
--spec encode_length(Length::non_neg_integer(),
-                    Max::non_neg_integer()) -> binary().
+-spec encode_length(non_neg_integer(), non_neg_integer()) -> binary().
 encode_length(Length, Max) when Length =< Max ->
     <<Length:16/unsigned-big>>.
 
 
 % @private
 % @doc Encode a value given its type into an iolist.
--spec encode_value(Value::term(), Type::atom()) -> iolist().
+-spec encode_value(term(), amp_command:amp_type()) -> iolist().
 encode_value(Value, integer) when is_integer(Value) ->
     integer_to_list(Value);
 encode_value(Value, float) when is_float(Value) ->
@@ -268,7 +267,7 @@ encode_value(Value, {amplist, Protocol}) ->
 
 % @private
 % @doc Decode a value in binary form given its type.
--spec decode_value(ValBin::binary(), Type::amp_type()) -> term().
+-spec decode_value(binary(), amp_command:amp_type()) -> term().
 decode_value(ValBin, integer) ->
     erlang:list_to_integer(erlang:binary_to_list(ValBin));
 decode_value(ValBin, float) ->
@@ -288,7 +287,7 @@ decode_value(ValBin, {amplist, Protocol}) ->
 
 % @private
 % @doc Decode an amplist value and return the list of boxes.
--spec decode_amplist(ValBin::binary(), Protocol::amp_list()) -> [box()].
+-spec decode_amplist(binary(), amp_command:amp_list()) -> [box()].
 decode_amplist(<<>>, _Protocol) ->
     [];
 decode_amplist(ValBin, Protocol) ->
