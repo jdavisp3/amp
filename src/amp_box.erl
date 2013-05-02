@@ -371,8 +371,7 @@ encode_test_() ->
     ].
 
 encode_ask_test() ->
-    Cmd = #amp_command{name = <<"n">>,
-                       arguments = [{<<"a">>, string, []}], response=nil},
+    Cmd = amp_command:new(<<"n">>, [{<<"a">>, string, []}]),
     Bin = encode_ask(Cmd, <<"1">>, [{<<"a">>, "A"}]),
     ?assertMatch(Bin, <<0, 4, "_ask", 0, 1, "1",
                         0, 8, "_command", 0, 1, "n",
@@ -388,8 +387,8 @@ encode_ask_test() ->
                  decode_command_header(<<0, 8, "_command", 0, 1>>)).
 
 encode_answer_test() ->
-    Cmd = #amp_command{name = <<"n">>, arguments=nil,
-                       response=[{<<"b">>, string, []}]},
+    Cmd = amp_command:new(<<"n">>, nil,
+                          [{<<"b">>, string, []}], [], []),
     Bin = encode_answer(Cmd, <<"1">>, [{<<"b">>, "B"}]),
     ?assertMatch(Bin, <<0, 7, "_answer", 0, 1, "1",
                         0, 1, "b", 0, 1, "B", 0, 0>>),
