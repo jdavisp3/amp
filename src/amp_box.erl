@@ -98,7 +98,7 @@ encode_error(Command, Id, ErrorCode, Description) ->
 
 %% @doc Return a new decoder object suitable for unserializing a wire
 %% format of an Amp box. Decoders are required arguments for decode_box/2.
--spec new_decoder(amp_list()) -> #decoder{}.
+-spec new_decoder(amp_command:amp_list()) -> #decoder{}.
 new_decoder(Protocol) ->
     [_ | _] = Protocol, % no empty boxes
     EmptyBin = <<>>,
