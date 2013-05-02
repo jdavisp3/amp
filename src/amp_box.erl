@@ -395,9 +395,9 @@ encode_answer_test() ->
     ?assertMatch({answer, <<"1">>, _}, decode_header(Bin)).
 
 encode_error_test() ->
-    Cmd = #amp_command{arguments=nil, response=nil,
-                       errors=[{<<"A">>, []},
-                               {<<"B">>, [fatal]}]},
+    Cmd = amp_command:new(<<"n">>, nil, nil, 
+                          [{<<"A">>, []},
+                           {<<"B">>, [fatal]}], []},
     Bin1 = encode_error(Cmd, "1", <<"A">>, <<"AA">>),
     ?assertMatch(Bin1, <<0, 6, "_error", 0, 1, "1",
                          0, 11, "_error_code", 0, 1, "A",
