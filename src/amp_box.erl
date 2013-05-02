@@ -33,8 +33,6 @@
 -include_lib("eunit/include/eunit.hrl").
 -endif.
 
--include("amp.hrl").
-
 -record(decoder, {
           orig_protocol,
           protocol,
@@ -64,14 +62,14 @@
 
 %% @doc Given an amp_command record, a message id, and a box, return a
 %% binary encoding of the Amp Box that would implement the call.
--spec encode_ask(Command::#amp_command{}, Id::binary(), Box::box()) -> binary().
-encode_ask(#amp_command{} = Command, Id, Box) ->
+-spec encode_ask(amp_command:amp_command(), binary(), box()) -> binary().
+encode_ask(Command, Id, Box) ->
     [_ | _] = Box, % no empty boxes
     encode_box([{?AMP_KEY_ASK, string, []},
                 {?AMP_KEY_COMMAND, string, []}
-                | Command#amp_command.arguments],
+                | amp_command:arguments(Command)],
                [{?AMP_KEY_ASK, Id},
-                {?AMP_KEY_COMMAND, Command#amp_command.name}
+                {?AMP_KEY_COMMAND, amp_command:name(Command)}
                 | Box]).
 
 
