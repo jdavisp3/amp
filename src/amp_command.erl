@@ -102,12 +102,12 @@ options(#amp_command{options=Options}) ->
 
 -ifdef(TEST).
 
-command_test_() ->
+command_test() ->
     C = new(a, b, c, d, e),
-    ?_assertMatch(a, name(C)),
-    ?_assertMatch(b, arguments(C)),
-    ?_assertMatch(c, response(C)),
-    ?_assertMatch(d, errors(C)),
-    ?_assertMatch(e, options(C)).
+    ?assertMatch(a, name(C)),
+    ?assertMatch(b, arguments(C)),
+    ?assertMatch(c, response(C)),
+    ?assertMatch(d, errors(C)),
+    ?assertMatch(e, options(C)).
 
 -endif.
