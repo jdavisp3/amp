@@ -73,6 +73,10 @@
 
 -opaque amp_command() :: #amp_command{}.
 
+-ifdef(TEST).
+-include_lib("eunit/include/eunit.hrl").
+-endif.
+
 
 new(Name, Arguments, Response, Errors, Options) ->
     #amp_command{name=Name, arguments=Arguments, response=Response,
@@ -92,3 +96,18 @@ errors(#amp_command{errors=Errors}) ->
 
 options(#amp_command{options=Options}) ->
     Options.
+
+
+% Tests
+
+-ifdef(TEST).
+
+command_test_() ->
+    C = new(a, b, c, d, e),
+    ?_assertMatch(a, name(C)),
+    ?_assertMatch(b, arguments(C)),
+    ?_assertMatch(c, response(C)),
+    ?_assertMatch(d, errors(C)),
+    ?_assertMatch(e, options(C)).
+
+-endif.
