@@ -25,18 +25,20 @@
                           | {error, badframe}
                           | {error, atom()}.
 
--callback amp_init(opts()) ->
+-callback init(opts()) ->
           {ok, state()}
         | {ok, state(), handler_opts()}
         | shutdown.
 
--callback amp_handle_ask(Name::binary(), Args::list(), from(), state()) ->
+-callback handle_ask(Name::binary(), Args::list(), from(), state()) ->
           {ok, state()}
         | {ok, state(), handler_opts()}
         | {answer, Response::list(), state()}
         | {shutdown, state()}.
 
--callback amp_handle_info(Msg::any(), state()) ->
+-callback handle_info(Msg::any(), state()) ->
           {ok, state()}
         | {ok, state(), handler_opts()}
         | {shutdown, state()}.
+
+-callback terminate(terminate_reason(), state()) -> ok.
