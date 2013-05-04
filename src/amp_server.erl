@@ -27,6 +27,13 @@
                 max_pending :: non_neg_integer() % max # of pending q's & a's
                }).
 
+%% ranch_protocol
+-export([start_link/4]).
+
 %% gen_server
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
          terminate/2, code_change/3]).
+
+
+start_link(Ref, Socket, Transport, ProtocolOptions) ->
+    ok.
