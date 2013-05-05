@@ -107,11 +107,12 @@ lookup_command([Command|Commands], Name) ->
 % @doc Send a new question to the other side. Returns
 % the Id of the new question and the new state of the server.
 -spec ask_question(#state{}, amp:amp_command(), amp:box(), any()) -> #state{}.
-ask_question(State, Command, Box, From) ->
+ask_question(#state{socket=Socket, transport=Transport}=State,
+             Command, Box, From) ->
     {Id, NextId} = make_id(State),
-    Data = amp_box:encode_ask(Command, Id, KVPairs),
-    send(Data, State),
-    Questions = dict:store(Id, Question, State#state.questions),
+    Bin = amp_box:encode_ask(Command, Id, Box),
+    Transport:send(Socket, Bin),
+    Questions = dict:store(Id, From, State#state.questions),
     check_max_pending(Questions, State),
     NewState = State#state{nextid=NextId, questions=Questions},
     {Id, NewState}.
@@ -122,3 +123,12 @@ ask_question(State, Command, Box, From) ->
 make_id(#state{nextid=NextId}) ->
     Id = binary:list_to_bin(integer_to_list(NextId)),
     {Id, NextId + 1}.
+
+% @private
+check_max_pending(Dict, #state{max_pending=Max}) ->
+    case dict:size(Dict) of
+        Size when Size =< Max ->
+            ok;
+        _ ->
+            error(max_pending_exceeded)
+    end.
