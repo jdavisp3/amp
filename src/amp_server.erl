@@ -45,7 +45,7 @@
 %% Once an answer, or a legal error, comes back from the peer, a message
 %% will be sent to the calling process with the following form:
 -spec ask(pid(), amp_command:amp_name(), KVPairs::list()) -> Result
-                                              Proto = amp_command() | string()
+                                              Proto = amp:amp_command() | string()
                                               Result = {ok, QuestionKey}
                                               QuestionKey = {Pid, Id}
 ask(Pid, Name, KVPairs) ->
