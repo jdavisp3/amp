@@ -73,8 +73,11 @@ handle_call({ask, Name, Box}, From, State) ->
             {noreply, State0};
         false ->
             {reply, ok, State0}
-    end.
+    end;
+handle_call(_, _From, State) ->
+	{reply, ignored, State}.
 
+% @private
 lookup_command([Command|Commands], Name) ->
     case amp_command:name(Command) of
         Name ->
@@ -82,3 +85,19 @@ lookup_command([Command|Commands], Name) ->
         _ ->
             lookup_command(Commands, Name)
     end.
+
+% @private
+handle_cast(_, State) ->
+    {noreply, State}.
+
+% @private
+handle_info(_Info, State) ->
+    {noreply, State}.
+
+% @private
+terminate(_Reason, _State) ->
+    ok.
+
+% @private
+code_change(_OldVsn, State, _Extra) ->
+    {ok, State}.
