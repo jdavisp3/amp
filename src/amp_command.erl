@@ -48,30 +48,13 @@
 -export([new/5]).
 -export([name/1, arguments/1, response/1, errors/1, options/1]).
 
--export_type([amp_type/0, amp_list/0, amp_name/0,
-              amp_option/0, amp_error/0, amp_error_option/0,
-              amp_command/0]).
-
--type amp_type() :: 'string' | 'binary' | 'integer' | 'float' | 'boolean'
-                  | {'amplist', amp_list()}.
--type amp_list() :: [{amp_name(), amp_type(), [amp_option()]}].
--type amp_name() :: binary().
--type amp_option() :: 'optional'.
-
--type amp_error() :: {amp_name(), [amp_error_option()]}.
--type amp_error_option() :: 'fatal'.
-
--type amp_command_option() :: 'requires_answer'.
-
 -record(amp_command, {
-          name :: amp_name(),
-          arguments = [] :: [amp_type()],
-          response = [] :: [amp_type()],
-          errors = [] :: [amp_error()],
-          options = [requires_answer] :: [amp_command_option()]
+          name :: amp:amp_name(),
+          arguments = [] :: [amp:amp_type()],
+          response = [] :: [amp:amp_type()],
+          errors = [] :: [amp:amp_error()],
+          options = [requires_answer] :: [amp:amp_command_option()]
          }).
-
--opaque amp_command() :: #amp_command{}.
 
 -ifdef(TEST).
 -include_lib("eunit/include/eunit.hrl").

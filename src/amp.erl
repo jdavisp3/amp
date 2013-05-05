@@ -14,7 +14,24 @@
 
 -module(amp).
 
--export_type([box/0, kvp/0]).
+-export_type([amp_box/0, amp_kvp/0]).
 
--type box() :: [kvp()].
--type kvp() :: {binary(), term()}.
+-export_type([amp_type/0, amp_list/0, amp_name/0,
+              amp_option/0, amp_error/0, amp_error_option/0,
+              amp_command_option/0, amp_command/0]).
+
+-type amp_box() :: [amp_kvp()].
+-type amp_kvp() :: {binary(), term()}.
+
+-type amp_type() :: 'string' | 'binary' | 'integer' | 'float' | 'boolean'
+                  | {'amplist', amp_list()}.
+-type amp_list() :: [{amp_name(), amp_type(), [amp_option()]}].
+-type amp_name() :: binary().
+-type amp_option() :: 'optional'.
+
+-type amp_error() :: {amp_name(), [amp_error_option()]}.
+-type amp_error_option() :: 'fatal'.
+
+-type amp_command_option() :: 'requires_answer'.
+
+-opaque amp_command() :: record().
