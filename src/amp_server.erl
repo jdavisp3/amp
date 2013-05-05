@@ -21,6 +21,7 @@
                 transport,
                 nextid=0,
                 handler :: atom(),
+                commands=[] :: [amp:amp_command()],
                 questions :: dict(), % id -> question (pending questions we asked)
                 answers :: dict(), % external id -> answer (pending answers we
                                    % have been asked),
@@ -39,17 +40,15 @@
 
 -define(MAX_PENDING, 1000).
 
+-type ask_response() :: {amp_answer, amp:amp_box()}
+                      | {amp_error, amp:amp_name(), amp:amp_box()}.
 
-%% @doc
-%% Send a question to the peer. The return value includes a QuestionKey.
-%% Once an answer, or a legal error, comes back from the peer, a message
-%% will be sent to the calling process with the following form:
--spec ask(pid(), amp_command:amp_name(), KVPairs::list()) -> Result
-                                              Proto = amp:amp_command() | string()
-                                              Result = {ok, QuestionKey}
-                                              QuestionKey = {Pid, Id}
-ask(Pid, Name, KVPairs) ->
-    gen_server:call(Pid, {ask, Name, KVPairs}).
+
+% @doc Send a question to the peer and get back the answer, an error
+% from the command, or a general error.
+-spec ask(pid(), amp_command:amp_name(), amp:amp_box()) -> ask_response().
+ask(Pid, Name, Box) ->
+    gen_server:call(Pid, {ask, Name, Box}).
 
 
 start_link(Ref, Socket, Transport, Opts) ->
