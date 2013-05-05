@@ -114,8 +114,7 @@ ask_question(#state{socket=Socket, transport=Transport}=State,
     Transport:send(Socket, Bin),
     Questions = dict:store(Id, From, State#state.questions),
     check_max_pending(Questions, State),
-    NewState = State#state{nextid=NextId, questions=Questions},
-    {Id, NewState}.
+    State#state{nextid=NextId, questions=Questions}.
 
 % @private
 % @doc Given a state, return a new Id binary and a new nextid integer.
