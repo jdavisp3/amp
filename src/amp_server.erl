@@ -78,15 +78,6 @@ handle_call(_, _From, State) ->
 	{reply, ignored, State}.
 
 % @private
-lookup_command([Command|Commands], Name) ->
-    case amp_command:name(Command) of
-        Name ->
-            Command;
-        _ ->
-            lookup_command(Commands, Name)
-    end.
-
-% @private
 handle_cast(_, State) ->
     {noreply, State}.
 
@@ -101,3 +92,33 @@ terminate(_Reason, _State) ->
 % @private
 code_change(_OldVsn, State, _Extra) ->
     {ok, State}.
+
+
+% @private
+lookup_command([Command|Commands], Name) ->
+    case amp_command:name(Command) of
+        Name ->
+            Command;
+        _ ->
+            lookup_command(Commands, Name)
+    end.
+
+% @private
+% @doc Send a new question to the other side. Returns
+% the Id of the new question and the new state of the server.
+-spec ask_question(#state{}, amp:amp_command(), amp:box(), any()) -> #state{}.
+ask_question(State, Command, Box, From) ->
+    {Id, NextId} = make_id(State),
+    Data = amp_box:encode_ask(Command, Id, KVPairs),
+    send(Data, State),
+    Questions = dict:store(Id, Question, State#state.questions),
+    check_max_pending(Questions, State),
+    NewState = State#state{nextid=NextId, questions=Questions},
+    {Id, NewState}.
+
+% @private
+% @doc Given a state, return a new Id binary and a new nextid integer.
+-spec make_id(#state{}) -> {binary(), integer()}.
+make_id(#state{nextid=NextId}) ->
+    Id = binary:list_to_bin(integer_to_list(NextId)),
+    {Id, NextId + 1}.
