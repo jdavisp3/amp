@@ -75,13 +75,10 @@ handle_call({ask, Name, Box}, From, State) ->
             {reply, ok, State0}
     end.
 
-
-
-
-
-
-
-
-
-
-
+lookup_command([Command|Commands], Name) ->
+    case amp_command:name(Command) of
+        Name ->
+            Command;
+        _ ->
+            lookup_command(Commands, Name)
+    end.

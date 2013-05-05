@@ -47,6 +47,7 @@
 
 -export([new/5]).
 -export([name/1, arguments/1, response/1, errors/1, options/1]).
+-export([requires_answer/1]).
 
 -record(amp_command, {
           name :: amp:amp_name(),
@@ -79,6 +80,9 @@ errors(#amp_command{errors=Errors}) ->
 
 options(#amp_command{options=Options}) ->
     Options.
+
+requires_answer(#amp_command{options=Options}) ->
+    proplists:get_bool(requires_answer, Options).
 
 
 % Tests
