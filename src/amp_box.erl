@@ -56,13 +56,10 @@
 -define(AMP_ERROR_PROTOCOL, [{?AMP_KEY_ERROR_CODE, string, []},
                              {?AMP_KEY_ERROR_DESCRIPTION, string, []}]).
 
--type box() :: [kvp()].
--type kvp() :: {binary(), term()}.
-
 
 %% @doc Given an amp_command record, a message id, and a box, return a
 %% binary encoding of the Amp Box that would implement the call.
--spec encode_ask(amp_command:amp_command(), binary(), box()) -> binary().
+-spec encode_ask(amp_command:amp_command(), binary(), amp:box()) -> binary().
 encode_ask(Command, Id, Box) ->
     [_ | _] = Box, % no empty boxes
     encode_box([{?AMP_KEY_ASK, string, []},
@@ -77,7 +74,7 @@ encode_ask(Command, Id, Box) ->
 %% binary encoding of the AmpBox that would implement the answer box for
 %% a call.
 -spec encode_answer(amp_command:amp_command(), binary(),
-                    box()) -> binary().
+                    amp:box()) -> binary().
 encode_answer(Command, Id, Box) ->
     [_ | _] = Box, % no empty boxes
     encode_box([{?AMP_KEY_ANSWER, string, []} | amp_command:response(Command)],
@@ -110,7 +107,7 @@ new_decoder(Protocol) ->
 %% decoder.
 -spec decode_box(#decoder{}, binary()) ->
                         {not_done, #decoder{}} |
-                        {done, box(), Rest::binary()}.
+                        {done, amp:box(), Rest::binary()}.
 decode_box(Decoder, Packet) ->
     Remainder = Decoder#decoder.remainder,
     Whole = <<Remainder/binary, Packet/binary>>,
@@ -161,7 +158,7 @@ decode_command_header(Packet) ->
 
 %% @doc Given an AmpList protocol and a box, return a binary encoding
 %% of the box that matches the protocol.
--spec encode_box(amp_command:amp_list(), box()) -> binary().
+-spec encode_box(amp_command:amp_list(), amp:box()) -> binary().
 encode_box(Protocol, Box) ->
     IOList = encode_box_int(Protocol, Box),
     [_, _ | _] = IOList, % no empty boxes
@@ -170,7 +167,7 @@ encode_box(Protocol, Box) ->
 
 % @private
 % @doc Encode the box according to the given protocol into the IOList.
--spec encode_box_int(amp_command:amp_list(), box()) -> iolist().
+-spec encode_box_int(amp_command:amp_list(), amp:box()) -> iolist().
 encode_box_int([], _Box) ->
     [<<0, 0>>];
 encode_box_int([{Key, Type, Options} | Protocol], Box) ->
@@ -189,9 +186,9 @@ encode_box_int([{Key, Type, Options} | Protocol], Box) ->
 
 % @private
 % @doc Decode the packet as much as possible and return the results.
--spec decode_box(amp_command:amp_list(), box(), binary()) ->
-                        {not_done, amp_command:amp_list(), box(), Rest::binary()}
-                            | {done, box(), Rest::binary()}.
+-spec decode_box(amp_command:amp_list(), amp:box(), binary()) ->
+                        {not_done, amp_command:amp_list(), amp:box(), Rest::binary()}
+                            | {done, amp:box(), Rest::binary()}.
 decode_box(Protocol, Box, Packet) when size(Packet) < 2 ->
     {not_done, Protocol, Box, Packet};
 decode_box([], Box, <<0, 0, Rest/binary>>) ->
@@ -288,7 +285,7 @@ decode_value(ValBin, {amplist, Protocol}) ->
 
 % @private
 % @doc Decode an amplist value and return the list of boxes.
--spec decode_amplist(binary(), amp_command:amp_list()) -> [box()].
+-spec decode_amplist(binary(), amp_command:amp_list()) -> [amp:box()].
 decode_amplist(<<>>, _Protocol) ->
     [];
 decode_amplist(ValBin, Protocol) ->

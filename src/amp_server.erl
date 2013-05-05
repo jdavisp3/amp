@@ -27,9 +27,11 @@
                 max_pending :: non_neg_integer() % max # of pending q's & a's
                }).
 
+%% AMP
+-export([ask/3]).
+
 %% ranch_protocol
 -export([start_link/4]).
--export([init/4]).
 
 %% gen_server
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
@@ -38,10 +40,22 @@
 -define(MAX_PENDING, 1000).
 
 
-start_link(Ref, Socket, Transport, Opts) ->
-    proc_lib:start_link(?MODULE, init, [Ref, Socket, Transport, Opts]).
+%% @doc
+%% Send a question to the peer. The return value includes a QuestionKey.
+%% Once an answer, or a legal error, comes back from the peer, a message
+%% will be sent to the calling process with the following form:
+-spec ask(pid(), amp_command:amp_name(), KVPairs::list()) -> Result
+                                              Proto = amp_command() | string()
+                                              Result = {ok, QuestionKey}
+                                              QuestionKey = {Pid, Id}
+ask(Pid, Name, KVPairs) ->
+    gen_server:call(Pid, {ask, Name, KVPairs}).
 
-init(Ref, Socket, Transport, Opts) ->
+
+start_link(Ref, Socket, Transport, Opts) ->
+    proc_lib:start_link(?MODULE, init, [[Ref, Socket, Transport, Opts]]).
+
+init([Ref, Socket, Transport, Opts]) ->
     ok = proc_lib:init_ack({ok, self()}),
     ok = ranch:accept_ack(Ref),
     ok = Transport:setopts(Socket, [{active, once}]),

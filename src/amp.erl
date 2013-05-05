@@ -13,3 +13,8 @@
 %% OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 -module(amp).
+
+-export_type([box/0, kvp/0]).
+
+-type box() :: [kvp()].
+-type kvp() :: {binary(), term()}.
