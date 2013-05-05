@@ -63,3 +63,25 @@ init([Ref, Socket, Transport, Opts]) ->
                    questions=dict:new(), answers=dict:new(),
                    max_pending=proplists:get_value(max_pending, Opts, ?MAX_PENDING)},
     gen_server:enter_loop(?MODULE, [], State).
+
+
+handle_call({ask, Name, Box}, From, State) ->
+    Command = lookup_command(State#state.commands, Name),
+    State0 = ask_question(State, Command, Box, From),
+    case amp_command:requires_answer(Command) of
+        true ->
+            {noreply, State0};
+        false ->
+            {reply, ok, State0}
+    end.
+
+
+
+
+
+
+
+
+
+
+
