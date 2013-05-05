@@ -29,11 +29,24 @@
 
 %% ranch_protocol
 -export([start_link/4]).
+-export([init/4]).
 
 %% gen_server
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
          terminate/2, code_change/3]).
 
+-define(MAX_PENDING, 1000).
 
-start_link(Ref, Socket, Transport, ProtocolOptions) ->
-    ok.
+
+start_link(Ref, Socket, Transport, Opts) ->
+    proc_lib:start_link(?MODULE, init, [Ref, Socket, Transport, Opts]).
+
+init(Ref, Socket, Transport, Opts) ->
+    ok = proc_lib:init_ack({ok, self()}),
+    ok = ranch:accept_ack(Ref),
+    ok = Transport:setopts(Socket, [{active, once}]),
+    State = #state{socket=Socket, transport=Transport,
+                   handler=proplists:get_value(handler, Opts),
+                   questions=dict:new(), answers=dict:new(),
+                   max_pending=proplists:get_value(max_pending, Opts, ?MAX_PENDING)},
+    gen_server:enter_loop(?MODULE, [], State).
