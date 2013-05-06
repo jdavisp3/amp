@@ -17,17 +17,6 @@
 -behaviour(ranch_protocol).
 -behaviour(gen_server).
 
--record(state, {socket,
-                transport,
-                nextid=0,
-                handler :: atom(),
-                commands=[] :: [amp:amp_command()],
-                questions :: dict(), % id -> question (pending questions we asked)
-                answers :: dict(), % external id -> answer (pending answers we
-                                   % have been asked),
-                max_pending :: non_neg_integer() % max # of pending q's & a's
-               }).
-
 %% AMP
 -export([ask/3]).
 
@@ -42,6 +31,18 @@
 
 -type ask_response() :: {amp_answer, amp:amp_box()}
                       | {amp_error, amp:amp_name(), amp:amp_box()}.
+
+-record(state, {socket,
+                transport,
+                nextid=0,
+                handler :: atom(),
+                handler_state :: any(),
+                commands=[] :: [amp:amp_command()],
+                questions :: dict(), % id -> question (pending questions we asked)
+                answers :: dict(), % external id -> answer (pending answers we
+                                   % have been asked),
+                max_pending :: non_neg_integer() % max # of pending q's & a's
+               }).
 
 
 % @doc Send a question to the peer and get back the answer, an error
@@ -62,7 +63,25 @@ init([Ref, Socket, Transport, Opts]) ->
                    handler=proplists:get_value(handler, Opts),
                    questions=dict:new(), answers=dict:new(),
                    max_pending=proplists:get_value(max_pending, Opts, ?MAX_PENDING)},
-    gen_server:enter_loop(?MODULE, [], State).
+    gen_server:enter_loop(?MODULE, [], init_handler(State, Opts)).
+
+
+% @private
+init_handler(#state{handler=Handler}=State, Opts) ->
+    HandlerOpts = proplists:get_value(handler_opts, Opts, []),
+    try Handler:init(HandlerOpts) of
+        {ok, HandlerState} ->
+            State#state{handler_state=HandlerState}
+	catch Class:Reason ->
+		error_logger:error_msg(
+                  "** Amp handler ~p terminating in ~p/~p~n"
+                  "   for the reason ~p:~p~n"
+                  "** Options were ~p~n"
+                  "** Stacktrace: ~p~n~n",
+                  [Handler, init, 1, Class, Reason,
+                   HandlerOpts, erlang:get_stacktrace()]),
+		error(Reason)
+    end.
 
 
 handle_call({ask, Name, Box}, From, State) ->
