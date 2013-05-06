@@ -73,7 +73,7 @@ init_handler(#state{handler=Handler}=State, Opts) ->
         {ok, HandlerState, Commands} ->
             State#state{handler_state=HandlerState, commands=Commands};
         shutdown ->
-            exit(shutdown)
+            exit(normal)
     catch Class:Reason ->
             error_logger:error_msg(
               "** Amp handler ~p terminating in ~p/~p~n"
