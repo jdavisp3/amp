@@ -71,7 +71,9 @@ init_handler(#state{handler=Handler}=State, Opts) ->
     HandlerOpts = proplists:get_value(handler_opts, Opts, []),
     try Handler:init(HandlerOpts) of
         {ok, HandlerState, Commands} ->
-            State#state{handler_state=HandlerState, commands=Commands}
+            State#state{handler_state=HandlerState, commands=Commands};
+        shutdown ->
+            exit(shutdown)
     catch Class:Reason ->
             error_logger:error_msg(
               "** Amp handler ~p terminating in ~p/~p~n"
