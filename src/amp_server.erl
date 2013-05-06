@@ -63,7 +63,7 @@ init([Ref, Socket, Transport, Opts]) ->
                    handler=proplists:get_value(handler, Opts),
                    questions=dict:new(), answers=dict:new(),
                    max_pending=proplists:get_value(max_pending, Opts, ?MAX_PENDING)},
-    init_handler(State, Opts).
+    gen_server:enter_loop(?MODULE, [], init_handler(State, Opts)).
 
 
 % @private
@@ -83,8 +83,7 @@ init_handler(#state{handler=Handler}=State, Opts) ->
               [Handler, init, 1, Class, Reason,
                HandlerOpts, erlang:get_stacktrace()]),
             error(Reason)
-    end,
-    gen_server:enter_loop(?MODULE, [], init_handler(State, Opts)).
+    end.
 
 
 handle_call({ask, Name, Box}, From, State) ->
