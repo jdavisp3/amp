@@ -26,8 +26,8 @@
                           | {error, atom()}.
 
 -callback init(opts()) ->
-          {ok, state()}
-        | {ok, state(), handler_opts()}
+          {ok, state(), [amp:amp_command()]}
+        | {ok, state(), [amp:amp_command()], handler_opts()}
         | shutdown.
 
 -callback handle_ask(Name::binary(), Args::list(), from(), state()) ->

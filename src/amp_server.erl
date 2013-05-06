@@ -70,8 +70,8 @@ init([Ref, Socket, Transport, Opts]) ->
 init_handler(#state{handler=Handler}=State, Opts) ->
     HandlerOpts = proplists:get_value(handler_opts, Opts, []),
     try Handler:init(HandlerOpts) of
-        {ok, HandlerState} ->
-            State#state{handler_state=HandlerState}
+        {ok, HandlerState, Commands} ->
+            State#state{handler_state=HandlerState, commands=Commands}
 	catch Class:Reason ->
 		error_logger:error_msg(
                   "** Amp handler ~p terminating in ~p/~p~n"
