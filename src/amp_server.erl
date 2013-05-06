@@ -59,11 +59,12 @@ init([Ref, Socket, Transport, Opts]) ->
     ok = proc_lib:init_ack({ok, self()}),
     ok = ranch:accept_ack(Ref),
     ok = Transport:setopts(Socket, [{active, once}]),
-    State = #state{socket=Socket, transport=Transport,
-                   handler=proplists:get_value(handler, Opts),
-                   questions=dict:new(), answers=dict:new(),
-                   max_pending=proplists:get_value(max_pending, Opts, ?MAX_PENDING)},
-    gen_server:enter_loop(?MODULE, [], init_handler(State, Opts)).
+    State0 = #state{socket=Socket, transport=Transport,
+                    handler=proplists:get_value(handler, Opts),
+                    questions=dict:new(), answers=dict:new(),
+                    max_pending=proplists:get_value(max_pending, Opts, ?MAX_PENDING)},
+    State1 = init_handler(State0, Opts),
+    gen_server:enter_loop(?MODULE, [], State1).
 
 
 % @private
