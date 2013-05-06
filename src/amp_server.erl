@@ -63,7 +63,7 @@ init([Ref, Socket, Transport, Opts]) ->
                    handler=proplists:get_value(handler, Opts),
                    questions=dict:new(), answers=dict:new(),
                    max_pending=proplists:get_value(max_pending, Opts, ?MAX_PENDING)},
-    gen_server:enter_loop(?MODULE, [], init_handler(State, Opts)).
+    init_handler(State, Opts).
 
 
 % @private
@@ -72,16 +72,17 @@ init_handler(#state{handler=Handler}=State, Opts) ->
     try Handler:init(HandlerOpts) of
         {ok, HandlerState, Commands} ->
             State#state{handler_state=HandlerState, commands=Commands}
-	catch Class:Reason ->
-		error_logger:error_msg(
-                  "** Amp handler ~p terminating in ~p/~p~n"
-                  "   for the reason ~p:~p~n"
-                  "** Options were ~p~n"
-                  "** Stacktrace: ~p~n~n",
-                  [Handler, init, 1, Class, Reason,
-                   HandlerOpts, erlang:get_stacktrace()]),
-		error(Reason)
-    end.
+    catch Class:Reason ->
+            error_logger:error_msg(
+              "** Amp handler ~p terminating in ~p/~p~n"
+              "   for the reason ~p:~p~n"
+              "** Options were ~p~n"
+              "** Stacktrace: ~p~n~n",
+              [Handler, init, 1, Class, Reason,
+               HandlerOpts, erlang:get_stacktrace()]),
+            error(Reason)
+    end,
+    gen_server:enter_loop(?MODULE, [], init_handler(State, Opts)).
 
 
 handle_call({ask, Name, Box}, From, State) ->
