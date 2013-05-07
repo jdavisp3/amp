@@ -98,8 +98,7 @@ encode_error(Command, Id, ErrorCode, Description) ->
 -spec new_decoder(amp_command:amp_list()) -> #decoder{}.
 new_decoder(Protocol) ->
     [_ | _] = Protocol, % no empty boxes
-    EmptyBin = <<>>,
-    #decoder{orig_protocol=Protocol, protocol=Protocol, remainder=EmptyBin}.
+    #decoder{orig_protocol=Protocol, protocol=Protocol, remainder= <<>>}.
 
 %% @doc Decode a part (or whole) of a box.
 %% If the complete box is decoded, return the box we decoded and the
