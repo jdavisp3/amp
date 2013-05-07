@@ -61,11 +61,13 @@ init([Ref, Socket, Transport, Opts]) ->
     ok = proc_lib:init_ack({ok, self()}),
     ok = ranch:accept_ack(Ref),
     ok = Transport:setopts(Socket, [{active, once}]),
-    State = #state{socket=Socket, transport=Transport,
-                   handler=proplists:get_value(handler, Opts),
-                   questions=dict:new(), answers=dict:new(),
-                   max_pending=proplists:get_value(max_pending, Opts, ?MAX_PENDING)},
-    gen_server:enter_loop(?MODULE, [], init_handler(State, Opts)).
+    State0 = #state{socket=Socket, transport=Transport,
+                    handler=proplists:get_value(handler, Opts),
+                    questions=dict:new(), answers=dict:new(),
+                    max_pending=proplists:get_value(max_pending, Opts, ?MAX_PENDING)},
+    {State1, CallbackOpts} = init_handler(State0, Opts),
+    State2 = update_timeout(State1, CallbackOpts),
+    gen_server:enter_loop(?MODULE, [], State2).
 
 
 % @private
@@ -74,10 +76,10 @@ init_handler(#state{handler=Handler, socket=Socket,
     HandlerOpts = proplists:get_value(handler_opts, Opts, []),
     try Handler:init(HandlerOpts) of
         {ok, HandlerState, Commands} ->
-            State#state{handler_state=HandlerState, commands=Commands};
+            {State#state{handler_state=HandlerState, commands=Commands}, []};
         {ok, HandlerState, Commands, CallbackOpts} ->
-            State1 = State#state{handler_state=HandlerState, commands=Commands},
-            update_timeout(State1, CallbackOpts);
+            {State#state{handler_state=HandlerState, commands=Commands},
+             CallbackOpts};
         shutdown ->
             Transport:close(Socket),
             exit(normal)
