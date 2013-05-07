@@ -34,7 +34,7 @@
 
 -record(state, {socket,
                 transport,
-                nextid=0,
+                nextid=0 :: non_neg_integer(),
                 handler :: atom(),
                 handler_state :: any(),
                 timeout = infinity :: timeout(),
