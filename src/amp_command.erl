@@ -97,4 +97,10 @@ command_test() ->
     ?assertMatch(d, errors(C)),
     ?assertMatch(e, options(C)).
 
+requires_answer_test() ->
+    C1 = new(a, b, c, d, []),
+    C2 = new(a, b, c, d, [requires_answer]),
+    ?assertFalse(requires_answer(C1)),
+    ?assertTrue(requires_answer(C2)).
+
 -endif.
