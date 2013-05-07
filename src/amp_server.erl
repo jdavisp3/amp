@@ -68,12 +68,14 @@ init([Ref, Socket, Transport, Opts]) ->
 
 
 % @private
-init_handler(#state{handler=Handler}=State, Opts) ->
+init_handler(#state{handler=Handler, socket=Socket,
+                    transport=Transport}=State, Opts) ->
     HandlerOpts = proplists:get_value(handler_opts, Opts, []),
     try Handler:init(HandlerOpts) of
         {ok, HandlerState, Commands} ->
             State#state{handler_state=HandlerState, commands=Commands};
         shutdown ->
+            Transport:close(Socket),
             exit(normal)
     catch Class:Reason ->
             error_logger:error_msg(
