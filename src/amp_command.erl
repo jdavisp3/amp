@@ -100,7 +100,7 @@ command_test() ->
 requires_answer_test() ->
     C1 = new(a, b, c, d, []),
     C2 = new(a, b, c, d, [requires_answer]),
-%    ?assertFalse(requires_answer(C1)),
-    ?assertTrue(requires_answer(C2)).
+    ?assertEqual(requires_answer(C1), false),
+    ?assertEqual(requires_answer(C2), true).
 
 -endif.
