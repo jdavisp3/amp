@@ -32,18 +32,23 @@
 -type ask_response() :: {amp_answer, amp:amp_box()}
                       | {amp_error, amp:amp_name(), amp:amp_box()}.
 
+-type decode_state() :: {header, binary()}
+                      | {ask_header, binary()}
+                      | {ask | answer | error, amp_box:decoder()}.
+
 -record(state, {socket,
                 transport,
-                nextid=0 :: non_neg_integer(),
+                nextid = 0 :: non_neg_integer(),
                 handler :: atom(),
                 handler_state :: any(),
                 timeout = infinity :: timeout(),
                 timeout_ref = undefined :: undefined | reference(),
-                commands=[] :: [amp:amp_command()],
+                commands = [] :: [amp:amp_command()],
                 questions :: dict(), % id -> {From, Command} (pending questions we asked)
                 answers :: dict(), % external id -> answer (pending answers we
                                    % have been asked),
-                max_pending :: non_neg_integer() % max # of pending q's & a's
+                max_pending :: non_neg_integer(), % max # of pending q's & a's
+                decode_state = {header, <<>>} :: decode_state()
                }).
 
 

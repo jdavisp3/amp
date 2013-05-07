@@ -29,6 +29,8 @@
          decode_header/1, decode_command_header/1,
          encode_box/2]).
 
+-export_type([decoder/0]).
+
 -ifdef(TEST).
 -include_lib("eunit/include/eunit.hrl").
 -endif.
@@ -39,6 +41,8 @@
           remainder,
           box=[]
          }).
+
+-opaque decoder() :: #decoder{}.
 
 % Pre-defined key names
 -define(AMP_KEY_ASK, <<"_ask">>).
