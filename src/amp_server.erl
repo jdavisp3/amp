@@ -67,7 +67,7 @@ init([Ref, Socket, Transport, Opts]) ->
                     max_pending=proplists:get_value(max_pending, Opts, ?MAX_PENDING)},
     {State1, CallbackOpts} = init_handler(State0, Opts),
     State2 = update_timeout(State1, CallbackOpts),
-    gen_server:enter_loop(?MODULE, [], State2).
+    pre_loop(CallbackOpts, {gen_server, enter_loop, [?MODULE, [], State2]}).
 
 
 % @private
@@ -182,3 +182,11 @@ update_timeout(#state{timeout_ref=PrevRef} = State,
     update_timeout(State#state{timeout=Timeout, timeout_ref=Ref}, CallbackOpts);
 update_timeout(State, [_, CallbackOpts]) ->
     update_timeout(State, CallbackOpts).
+
+% @private
+pre_loop([], {M, F, A}) ->
+    erlang:apply(M, F, A);
+pre_loop([hibernate, _], {M, F, A}) ->
+    proc_lib:hibernate(M, F, A);
+pre_loop([_, CallbackOpts], MFA) ->
+    pre_loop(CallbackOpts, MFA).
