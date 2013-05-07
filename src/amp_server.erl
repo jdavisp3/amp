@@ -178,5 +178,3 @@ update_timeout(#state{timeout_ref=PrevRef} = State,
     update_timeout(State#state{timeout=Timeout, timeout_ref=Ref}, HandlerOpts);
 update_timeout(State, [_, HandlerOpts]) ->
     update_timeout(State, HandlerOpts).
-
-
