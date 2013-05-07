@@ -37,6 +37,8 @@
                 nextid=0,
                 handler :: atom(),
                 handler_state :: any(),
+                timeout = infinity :: timeout(),
+                timeout_ref = undefined :: undefined | reference(),
                 commands=[] :: [amp:amp_command()],
                 questions :: dict(), % id -> question (pending questions we asked)
                 answers :: dict(), % external id -> answer (pending answers we
