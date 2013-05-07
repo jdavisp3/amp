@@ -75,9 +75,9 @@ init_handler(#state{handler=Handler, socket=Socket,
     try Handler:init(HandlerOpts) of
         {ok, HandlerState, Commands} ->
             State#state{handler_state=HandlerState, commands=Commands};
-        {ok, HandlerState, Commands, HandlerOpts} ->
+        {ok, HandlerState, Commands, CallbackOpts} ->
             State1 = State#state{handler_state=HandlerState, commands=Commands},
-            update_timeout(State1, HandlerOpts);
+            update_timeout(State1, CallbackOpts);
         shutdown ->
             Transport:close(Socket),
             exit(normal)
@@ -164,7 +164,7 @@ check_max_pending(Dict, #state{max_pending=Max}) ->
 update_timeout(State, []) ->
     State;
 update_timeout(#state{timeout_ref=PrevRef} = State,
-               [{timeout, Timeout} | HandlerOpts]) ->
+               [{timeout, Timeout} | CallbackOpts]) ->
     case PrevRef of
         undefined ->
             ignore;
@@ -177,6 +177,6 @@ update_timeout(#state{timeout_ref=PrevRef} = State,
               Timeout ->
                   erlang:start_timer(Timeout, self(), ?MODULE)
           end,
-    update_timeout(State#state{timeout=Timeout, timeout_ref=Ref}, HandlerOpts);
-update_timeout(State, [_, HandlerOpts]) ->
-    update_timeout(State, HandlerOpts).
+    update_timeout(State#state{timeout=Timeout, timeout_ref=Ref}, CallbackOpts);
+update_timeout(State, [_, CallbackOpts]) ->
+    update_timeout(State, CallbackOpts).
