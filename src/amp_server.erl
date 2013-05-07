@@ -40,7 +40,7 @@
                 timeout = infinity :: timeout(),
                 timeout_ref = undefined :: undefined | reference(),
                 commands=[] :: [amp:amp_command()],
-                questions :: dict(), % id -> question (pending questions we asked)
+                questions :: dict(), % id -> {From, Command} (pending questions we asked)
                 answers :: dict(), % external id -> answer (pending answers we
                                    % have been asked),
                 max_pending :: non_neg_integer() % max # of pending q's & a's
@@ -144,7 +144,7 @@ ask_question(#state{socket=Socket, transport=Transport}=State,
     {Id, NextId} = make_id(State),
     Bin = amp_box:encode_ask(Command, Id, Box),
     Transport:send(Socket, Bin),
-    Questions = dict:store(Id, From, State#state.questions),
+    Questions = dict:store(Id, {From, Command}, State#state.questions),
     check_max_pending(Questions, State),
     State#state{nextid=NextId, questions=Questions}.
 
