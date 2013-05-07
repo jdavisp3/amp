@@ -75,6 +75,9 @@ init_handler(#state{handler=Handler, socket=Socket,
     try Handler:init(HandlerOpts) of
         {ok, HandlerState, Commands} ->
             State#state{handler_state=HandlerState, commands=Commands};
+        {ok, HandlerState, Commands, HandlerOpts} ->
+            State1 = State#state{handler_state=HandlerState, commands=Commands},
+            update_timeout(State1, HandlerOpts);
         shutdown ->
             Transport:close(Socket),
             exit(normal)
