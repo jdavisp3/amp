@@ -112,6 +112,8 @@ handle_cast(_, State) ->
     {noreply, State}.
 
 % @private
+handle_info({timeout, Ref, _}, #state{timeout_ref=Ref}=State) ->
+    {stop, timeout, State#state{timeout=infinity, timeout_ref=undefined}};
 handle_info(_Info, State) ->
     {noreply, State}.
 
