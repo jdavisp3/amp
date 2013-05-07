@@ -157,3 +157,26 @@ check_max_pending(Dict, #state{max_pending=Max}) ->
         _ ->
             error(max_pending_exceeded)
     end.
+
+% @private
+update_timeout(State, []) ->
+    State;
+update_timeout(#state{timeout_ref=PrevRef} = State,
+               [{timeout, Timeout} | HandlerOpts]) ->
+    case PrevRef of
+        undefined ->
+            ignore;
+        PrevRef ->
+            erlang:cancel_timer(PrevRef)
+    end,
+    Ref = case Timeout of
+              infinity ->
+                  undefined;
+              Timeout ->
+                  erlang:start_timer(Timeout, self(), ?MODULE)
+          end,
+    update_timeout(State#state{timeout=Timeout, timeout_ref=Ref}, HandlerOpts);
+update_timeout(State, [_, HandlerOpts]) ->
+    update_timeout(State, HandlerOpts).
+
+
