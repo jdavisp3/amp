@@ -35,7 +35,7 @@
 
 -record(decoder, {
           box = [] :: amp:amp_box(),
-          remainder = <<>> :: binary()
+          rest = <<>> :: binary()
          }).
 
 -opaque decoder() :: #decoder{}.
@@ -105,12 +105,12 @@ new_decoder() ->
 -spec decode_box(decoder(), binary()) ->
                         {not_done, decoder()} |
                         {amp:amp_box(), decoder()}.
-decode_box(#decoder{box=Box, remainder=Remainder}=Decoder, Bin) ->
-    case decode_box_int(Box, <<Remainder/binary, Bin/binary>>) of
+decode_box(#decoder{box=Box, rest=Rest}=Decoder, Bin) ->
+    case decode_box_int(Box, <<Rest/binary, Bin/binary>>) of
         {not_done, Box, Rest} ->
-            {not_done, Decoder#decoder{box=Box, remainder=Rest}};
+            {not_done, Decoder#decoder{box=Box, rest=Rest}};
         {Box, Rest} ->
-            {lists:reverse(Box), Decoder#decoder{remainder=Rest}}
+            {lists:reverse(Box), Decoder#decoder{rest=Rest}}
     end.
 
 
@@ -358,7 +358,7 @@ decode_1_test() ->
     {not_done, Decoder2} = decode_box(Decoder1, <<0>>),
     ?assert(Decoder2#decoder.box == []),
     {not_done, Decoder3} = decode_box(Decoder2, <<1, $a>>),
-    ?assert(Decoder3#decoder.remainder == <<0, 1, $a>>),
+    ?assert(Decoder3#decoder.rest == <<0, 1, $a>>),
     ?assert(Decoder3#decoder.box == []).
 
 decode_2_test() ->
