@@ -25,9 +25,7 @@
 
 %% API
 -export([encode_ask/3, encode_answer/3, encode_error/4,
-         new_decoder/1, decode_box/2,
-         decode_header/1, decode_command_header/1,
-         encode_box/2]).
+         new_decoder/1, decode_box/2]).
 
 -export_type([decoder/0]).
 
@@ -36,10 +34,8 @@
 -endif.
 
 -record(decoder, {
-          orig_protocol,
-          protocol,
-          remainder,
-          box=[]
+          box = [] :: amp:amp_box(),
+          remainder = <<>> :: binary()
          }).
 
 -opaque decoder() :: #decoder{}.
@@ -102,7 +98,7 @@ encode_error(Command, Id, ErrorCode, Description) ->
 -spec new_decoder(amp_command:amp_list()) -> #decoder{}.
 new_decoder(Protocol) ->
     [_ | _] = Protocol, % no empty boxes
-    #decoder{orig_protocol=Protocol, protocol=Protocol, remainder= <<>>}.
+    #decoder{}.
 
 %% @doc Decode a part (or whole) of a box.
 %% If the complete box is decoded, return the box we decoded and the
