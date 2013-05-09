@@ -140,7 +140,7 @@ encode_box([{Key, Type, Options} | Protocol], Box) ->
 decode_box_int(Box, Bin) when size(Bin) < 2 ->
     {not_done, Box, Bin};
 decode_box_int(Box, <<0, 0, Rest/binary>>) ->
-    {done, Box, Rest};
+    {Box, Rest};
 decode_box_int(Box, Bin) ->
     case match_kvp(Bin) of
         not_done ->
