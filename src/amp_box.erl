@@ -110,7 +110,7 @@ decode_box(#decoder{rest=Old}=Decoder, New) ->
         {not_done, Box, Rest} ->
             {not_done, Decoder#decoder{box=Box, rest=Rest}};
         {Box, Rest} ->
-            {lists:reverse(Box), Decoder#decoder{box=[], rest=Rest}}
+            {lists:reverse(Box), #decoder{rest=Rest}}
     end.
 
 
@@ -457,7 +457,8 @@ decode_13_test() ->
 decode_14_test() ->
     Decoder = new_decoder(),
     Input = <<0, 0, 0, 5, "nimbo">>,
-    ?assertMatch({}, test_one_by_one(Decoder, Input)).
+    ?assertMatch({[], #decoder{rest = <<0, 5, "nimbo">>}},
+                 test_one_by_one(Decoder, Input)).
 
 decode_15_test() ->
     Decoder = new_decoder(),
