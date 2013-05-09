@@ -457,7 +457,7 @@ decode_13_test() ->
 decode_14_test() ->
     Decoder = new_decoder(),
     Input = <<0, 0, 0, 5, "nimbo">>,
-    ?assertError(_, test_one_by_one(Decoder, Input)).
+    ?assertMatch({}, test_one_by_one(Decoder, Input)).
 
 decode_15_test() ->
     Decoder = new_decoder(),
