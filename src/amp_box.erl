@@ -354,17 +354,12 @@ encode_error_test() ->
     ?assertMatch(Bin1, <<0, 6, "_error", 0, 1, "1",
                          0, 11, "_error_code", 0, 1, "A",
                          0, 18, "_error_description", 0, 2, "AA", 0, 0>>),
-    {error, <<"1">>, Rest1} = decode_header(Bin1),
-    Decoder = new_decoder(?AMP_ERROR_PROTOCOL),
-    Out1 = {done, [{?AMP_KEY_ERROR_CODE, "A"},
-                   {?AMP_KEY_ERROR_DESCRIPTION, "AA"}], <<>>},
-    ?assertMatch(Out1, decode_box(Decoder, Rest1)),
+    ?assertMatch({error, <<"1">>, Rest1}, decode_box(new_decoder(), Bin1)),
 
     Bin2 = encode_error(Cmd, "2", <<"B">>, <<"BB">>),
-    {error, <<"2">>, Rest2} = decode_header(Bin2),
     Out2 = {done, [{?AMP_KEY_ERROR_CODE, "B"},
                    {?AMP_KEY_ERROR_DESCRIPTION, "BB"}], <<>>},
-    ?assertMatch(Out2, decode_box(Decoder, Rest2)).
+    ?assertMatch(Out2, decode_box(new_decoder(), Bin2)).
 
 
 test_one_by_one(Decoder, <<Byte, Input/binary>>) ->
@@ -376,37 +371,27 @@ test_one_by_one(Decoder, <<Byte, Input/binary>>) ->
     end.
 
 decode_1_test() ->
-    Protocol = [{"a", integer, []}],
-    Decoder1 = new_decoder(Protocol),
+    Decoder1 = new_decoder(),
     {not_done, Decoder2} = decode_box(Decoder1, <<0>>),
-    ?assert(Decoder2#decoder.protocol == Protocol),
-    ?assert(Decoder2#decoder.remainder == <<0>>),
     ?assert(Decoder2#decoder.box == []),
-
     {not_done, Decoder3} = decode_box(Decoder2, <<1, $a>>),
-
-    ?assert(Decoder2#decoder.protocol == Protocol),
     ?assert(Decoder3#decoder.remainder == <<0, 1, $a>>),
     ?assert(Decoder3#decoder.box == []).
 
 decode_2_test() ->
-    Protocol = [{<<"a">>, integer, []}],
-    Decoder = new_decoder(Protocol),
+    Decoder = new_decoder(),
     Input = <<0, 1, $a, 0, 1, $1, 0, 0>>,
     ?assertMatch({done, [{<<"a">>, 1}], <<>>},
                  decode_box(Decoder, Input)).
 
 decode_3_test() ->
-    Protocol = [{<<"a">>, integer, []}],
-    Decoder = new_decoder(Protocol),
+    Decoder = new_decoder(),
     Input = <<0, 1, $a, 0, 1, $4, 0, 0, 14>>,
     ?assertMatch({done, [{<<"a">>, 4}], <<14>>},
                  decode_box(Decoder, Input)).
 
 decode_4_test() ->
-    Protocol = [{<<"name">>, string, []},
-                {<<"billy o">>, integer, []}],
-    Decoder = new_decoder(Protocol),
+    Decoder = new_decoder(),
     Input1 = <<0, 7, "billy o", 0, 5, "12345",
                0, 4, "name", 0, 5, "nimbo",
                0, 0>>,
