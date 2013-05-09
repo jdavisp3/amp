@@ -143,27 +143,27 @@ decode_box_int(Box, <<0, 0, Rest/binary>>) ->
     {done, Box, Rest};
 decode_box_int(Box, Bin) ->
     case match_kvp(Bin) of
-        not_enough ->
+        not_done ->
             {not_done, Box, Bin};
         {Key, ValBin, Rest} ->
             decode_box_int([{Key, ValBin} | Box], Rest)
     end.
 
 % @private
-% @doc Match a key/value pair encoded at the front of Packet.
-% Return a tuple with the key name, the value still encoded as a binary,
-% and the remaining bytes from Packet that were not used in the kvp. Or,
-% if there are not enough bytes to decode the first kvp, return not_enough.
+% Match a key/value pair encoded at the front of the binary.  Return a
+% tuple with the key name, the value still encoded as a binary, and
+% the remaining bytes that were not used in the kvp. Or, if there are
+% not enough bytes to decode the first kvp, return not_done.
 -spec match_kvp(binary()) -> {Key::amp_command:amp_name(),
                               ValBin::binary(),
-                              Rest::binary()} | 'not_enough'.
+                              Rest::binary()} | 'not_done'.
 match_kvp(<<0, KeyLen, Key:KeyLen/binary,
             ValLen:16/unsigned-big, Val:ValLen/binary, Rest/binary>>) ->
     {Key, Val, Rest};
 match_kvp(<<0, _/binary>>) ->
-    not_enough;
+    not_done;
 match_kvp(<<>>) ->
-    not_enough.
+    not_done.
 
 
 % @private
