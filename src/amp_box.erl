@@ -100,58 +100,21 @@ new_decoder(Protocol) ->
     [_ | _] = Protocol, % no empty boxes
     #decoder{}.
 
-%% @doc Decode a part (or whole) of a box.
-%% If the complete box is decoded, return the box we decoded and the
-%% unprocessed bytes. If we are not done, return the new state of the
-%% decoder.
+% @doc Decode a part (or whole) of a box.
+% If the complete box is decoded, return the box we decoded and a
+% new decoder state. The decoder may contain another box, so
+% a second decode call with an empty binary is needed.
 -spec decode_box(decoder(), binary()) ->
                         {not_done, decoder()} |
                         {amp:amp_box(), decoder()}.
 decode_box(#decoder{box=Box, remainder=Remainder}=Decoder, Bin) ->
-    Whole = <<Remainder/binary, Bin/binary>>,
-    Result = decode_box(Box, Whole),
-    case Result of
-        {not_done, Protocol, Box, Rest} ->
-            {not_done, Decoder#decoder{protocol=Protocol, box=Box,
-                                       remainder=Rest}};
+    case decode_box(Box, <<Remainder/binary, Bin/binary>>) of
+        {not_done, Box, Rest} ->
+            {not_done, Decoder#decoder{box=Box, remainder=Rest}};
         {done, Box, Rest} ->
-            [_ | _] = Box, % no empty boxes
-            {done, lists:reverse(Box), Rest}
+            {lists:reverse(Box), Decoder#decoder{remainder=Rest}}
     end.
 
-%% @doc Match a key/value pair encoded at the front of an incoming box.
-%% Return a tuple indicating the type of incoming box and the Id for the
-%% message, plus the remaining bytes in the packet. The function will crash
-%% if the kvp has the wrong name.
--spec decode_header(binary())
-                   -> 'not_enough'
-                          | {'ask' | 'answer' | 'error',
-                             Id::binary(),
-                             Remaining::binary()}.
-decode_header(Packet) ->
-    case match_kvp(Packet) of
-        not_enough ->
-            not_enough;
-        {Key, ValBin, Remaining} ->
-            Id = decode_value(ValBin, binary),
-            BoxType = box_type(Key),
-            {BoxType, Id, Remaining}
-    end.
-
-%% @doc Match a key/value pair encoding the command name of an ask box.
-%% Return a tuple with the command name and the remaining bytes in the
-%% packet. The function will crash if the kvp was the wrong name.
--spec decode_command_header(binary())
-                           -> not_enough
-                                  | {CommandName::binary(), Remaining::binary()}.
-decode_command_header(Packet) ->
-    case match_kvp(Packet) of
-        not_enough ->
-            not_enough;
-        {?AMP_KEY_COMMAND, ValBin, Remaining} ->
-            CommandName = decode_value(ValBin, binary),
-            {CommandName, Remaining}
-    end.
 
 %% @doc Given an AmpList protocol and a box, return a binary encoding
 %% of the box that matches the protocol.
