@@ -430,7 +430,7 @@ decode_12_test() ->
     Decoder = new_decoder(),
 
     Input1 = <<0, 1, $', 0, 1, $0, 0, 0, 1, 2, 3>>,
-    ?assertMatch({done, [{<<"'">>, 0}], <<1, 2, 3>>},
+    ?assertMatch({[{<<"'">>, <<"0">>}], #decoder{rest = <<1, 2, 3>>}},
                  decode_box(Decoder, Input1)),
 
     Input2 = <<0, 1, $', 0, 1, $0,
