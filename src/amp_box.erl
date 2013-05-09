@@ -133,25 +133,20 @@ encode_box([{Key, Type, Options} | Protocol], Box) ->
     end.
 
 % @private
-% @doc Decode the packet as much as possible and return the results.
+% @doc Decode a binary box as much as possible and return the results.
 -spec decode_box_int(amp:amp_box(), binary()) ->
-                            {not_done, amp:amp_box(), Rest::binary()}
-                                | {amp:amp_box(), Rest::binary()}.
-decode_box_int(Protocol, Box, Packet) when size(Packet) < 2 ->
-    {not_done, Protocol, Box, Packet};
-decode_box_int([], Box, <<0, 0, Rest/binary>>) ->
+                            {not_done, amp:amp_box(), binary()}
+                                | {amp:amp_box(), binary()}.
+decode_box_int(Box, Bin) when size(Bin) < 2 ->
+    {not_done, Box, Bin};
+decode_box_int(Box, <<0, 0, Rest/binary>>) ->
     {done, Box, Rest};
-decode_box_int([{_, _, Options} | Protocol], Box, <<0, 0, _/binary>> = Packet) ->
-    true = proplists:get_bool(optional, Options),
-    decode_box_int(Protocol, Box, Packet);
-decode_box_int(Protocol, Box, Packet) ->
-    case match_kvp(Packet) of
+decode_box_int(Box, Bin) ->
+    case match_kvp(Bin) of
         not_enough ->
-            {not_done, Protocol, Box, Packet};
+            {not_done, Box, Bin};
         {Key, ValBin, Rest} ->
-            {Type, NewProtocol} = consume_key(Key, Protocol),
-            Value = decode_value(ValBin, Type),
-            decode_box_int(NewProtocol, [{Key, Value} | Box], Rest)
+            decode_box_int([{Key, ValBin} | Box], Rest)
     end.
 
 % @private
