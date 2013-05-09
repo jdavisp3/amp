@@ -110,7 +110,7 @@ decode_box(#decoder{rest=Old}=Decoder, New) ->
         {not_done, Box, Rest} ->
             {not_done, Decoder#decoder{box=Box, rest=Rest}};
         {Box, Rest} ->
-            {lists:reverse(Box), Decoder#decoder{rest=Rest}}
+            {lists:reverse(Box), Decoder#decoder{box=[], rest=Rest}}
     end.
 
 
@@ -464,7 +464,8 @@ decode_15_test() ->
     Input = <<0, 7, "billy o", 0, 5, "12345",
               0, 4, "name", 0, 5, "nimbo",
               0, 0>>,
-    Output = {[{<<"billy o">>, 12345}, {<<"name">>, <<"nimbo">>}], Decoder},
-    ?assertMatch(Output, test_one_by_one(Decoder, Input)).
+    ?assertMatch({[{<<"billy o">>, <<"12345">>},
+                   {<<"name">>, <<"nimbo">>}], Decoder},
+                 test_one_by_one(Decoder, Input)).
 
 -endif.
