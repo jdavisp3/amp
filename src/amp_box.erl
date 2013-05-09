@@ -404,8 +404,7 @@ decode_4_test() ->
     ?assertMatch(Output2, test_one_by_one(Decoder, Input2)).
 
 decode_5_test() ->
-    Protocol = [{<<"name">>, string, []}],
-    Decoder = new_decoder(Protocol),
+    Decoder = new_decoder(),
     Input = <<1, 4, "name", 0, 5, "nimbo">>,
     ?assertError(_, test_one_by_one(Decoder, Input)).
 
