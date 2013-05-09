@@ -25,7 +25,7 @@
 
 %% API
 -export([encode_ask/3, encode_answer/3, encode_error/4,
-         new_decoder/1, decode_box/2]).
+         new_decoder/0, decode_box/2]).
 
 -export_type([decoder/0]).
 
@@ -95,9 +95,8 @@ encode_error(Command, Id, ErrorCode, Description) ->
 
 %% @doc Return a new decoder object suitable for unserializing a wire
 %% format of an Amp box. Decoders are required arguments for decode_box/2.
--spec new_decoder(amp_command:amp_list()) -> #decoder{}.
-new_decoder(Protocol) ->
-    [_ | _] = Protocol, % no empty boxes
+-spec new_decoder() -> #decoder{}.
+new_decoder() ->
     #decoder{}.
 
 % @doc Decode a part (or whole) of a box.
@@ -337,12 +336,7 @@ encode_ask_test() ->
     ?assertMatch({ask, <<"1">>,
                   <<0, 8, "_command", 0, 1, "n",
                     0, 1, "a", 0, 1, "A", 0, 0>>},
-                 decode_header(Bin)),
-    ?assertMatch({<<"n">>, <<0, 1, "a", 0, 1, "A", 0, 0>>},
-                 decode_command_header(<<0, 8, "_command", 0, 1, "n",
-                                         0, 1, "a", 0, 1, "A", 0, 0>>)),
-    ?assertMatch(not_enough, 
-                 decode_command_header(<<0, 8, "_command", 0, 1>>)).
+                 decode_box(new_decoder(), Bin)).
 
 encode_answer_test() ->
     Cmd = amp_command:new(<<"n">>, nil,
@@ -350,7 +344,7 @@ encode_answer_test() ->
     Bin = encode_answer(Cmd, <<"1">>, [{<<"b">>, "B"}]),
     ?assertMatch(Bin, <<0, 7, "_answer", 0, 1, "1",
                         0, 1, "b", 0, 1, "B", 0, 0>>),
-    ?assertMatch({answer, <<"1">>, _}, decode_header(Bin)).
+    ?assertMatch({answer, <<"1">>, _}, decode_box(new_decoder(), Bin)).
 
 encode_error_test() ->
     Cmd = amp_command:new(<<"n">>, nil, nil, 
