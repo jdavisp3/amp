@@ -109,14 +109,14 @@ decode_box(#decoder{box=Box, remainder=Remainder}=Decoder, Bin) ->
     case decode_box_int(Box, <<Remainder/binary, Bin/binary>>) of
         {not_done, Box, Rest} ->
             {not_done, Decoder#decoder{box=Box, remainder=Rest}};
-        {done, Box, Rest} ->
+        {Box, Rest} ->
             {lists:reverse(Box), Decoder#decoder{remainder=Rest}}
     end.
 
 
 % @private
-% @doc Encode the box according to the given protocol into the IOList.
--spec encode_box(amp_command:amp_list(), amp:amp_box()) -> iolist().
+% @doc Encode the box according to the given protocol into iodata.
+-spec encode_box(amp_command:amp_list(), amp:amp_box()) -> iodata().
 encode_box([], _Box) ->
     [<<0, 0>>];
 encode_box([{Key, Type, Options} | Protocol], Box) ->
@@ -134,25 +134,24 @@ encode_box([{Key, Type, Options} | Protocol], Box) ->
 
 % @private
 % @doc Decode the packet as much as possible and return the results.
--spec decode_box(amp_command:amp_list(), amp:amp_box(), binary()) ->
-                        {not_done, amp_command:amp_list(),
-                         amp:amp_box(), Rest::binary()}
-                            | {done, amp:amp_box(), Rest::binary()}.
-decode_box(Protocol, Box, Packet) when size(Packet) < 2 ->
+-spec decode_box_int(amp:amp_box(), binary()) ->
+                            {not_done, amp:amp_box(), Rest::binary()}
+                                | {amp:amp_box(), Rest::binary()}.
+decode_box_int(Protocol, Box, Packet) when size(Packet) < 2 ->
     {not_done, Protocol, Box, Packet};
-decode_box([], Box, <<0, 0, Rest/binary>>) ->
+decode_box_int([], Box, <<0, 0, Rest/binary>>) ->
     {done, Box, Rest};
-decode_box([{_, _, Options} | Protocol], Box, <<0, 0, _/binary>> = Packet) ->
+decode_box_int([{_, _, Options} | Protocol], Box, <<0, 0, _/binary>> = Packet) ->
     true = proplists:get_bool(optional, Options),
-    decode_box(Protocol, Box, Packet);
-decode_box(Protocol, Box, Packet) ->
+    decode_box_int(Protocol, Box, Packet);
+decode_box_int(Protocol, Box, Packet) ->
     case match_kvp(Packet) of
         not_enough ->
             {not_done, Protocol, Box, Packet};
         {Key, ValBin, Rest} ->
             {Type, NewProtocol} = consume_key(Key, Protocol),
             Value = decode_value(ValBin, Type),
-            decode_box(NewProtocol, [{Key, Value} | Box], Rest)
+            decode_box_int(NewProtocol, [{Key, Value} | Box], Rest)
     end.
 
 % @private
