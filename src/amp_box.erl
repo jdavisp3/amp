@@ -339,7 +339,7 @@ test_one_by_one(Decoder, <<Byte, Input/binary>>) ->
         {not_done, Decoder1} ->
             test_one_by_one(Decoder1, Input);
         Result ->
-            Result
+            {Result, Input}
     end.
 
 decode_1_test() ->
@@ -457,7 +457,7 @@ decode_13_test() ->
 decode_14_test() ->
     Decoder = new_decoder(),
     Input = <<0, 0, 0, 5, "nimbo">>,
-    ?assertMatch({[], #decoder{rest = <<0, 5, "nimbo">>}},
+    ?assertMatch({{[], Decoder}, <<0, 5, "nimbo">>},
                  test_one_by_one(Decoder, Input)).
 
 decode_15_test() ->
@@ -465,8 +465,8 @@ decode_15_test() ->
     Input = <<0, 7, "billy o", 0, 5, "12345",
               0, 4, "name", 0, 5, "nimbo",
               0, 0>>,
-    ?assertMatch({[{<<"billy o">>, <<"12345">>},
-                   {<<"name">>, <<"nimbo">>}], Decoder},
+    ?assertMatch({{[{<<"billy o">>, <<"12345">>},
+                    {<<"name">>, <<"nimbo">>}], Decoder}, <<>>},
                  test_one_by_one(Decoder, Input)).
 
 -endif.
