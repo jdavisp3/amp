@@ -57,9 +57,9 @@
                              {?AMP_KEY_ERROR_DESCRIPTION, string, []}]).
 
 
-%% @doc Given an amp_command record, a message id, and a box, return a
-%% binary encoding of the Amp Box that would implement the call.
--spec encode_ask(amp_command:amp_command(), binary(), amp:amp_box()) -> binary().
+%% @doc Given an amp_command record, a message id, and a box, return an
+%% iodata encoding of the Amp Box that would implement the call.
+-spec encode_ask(amp_command:amp_command(), binary(), amp:amp_box()) -> iodata().
 encode_ask(Command, Id, Box) ->
     [_ | _] = Box, % no empty boxes
     encode_box([{?AMP_KEY_ASK, string, []},
@@ -70,21 +70,20 @@ encode_ask(Command, Id, Box) ->
                 | Box]).
 
 
-%% @doc Given an amp_command record, a message id, and a box, return a
-%% binary encoding of the AmpBox that would implement the answer box for
+%% @doc Given an amp_command record, a message id, and a box, return an
+%% iodata encoding of the AmpBox that would implement the answer box for
 %% a call.
 -spec encode_answer(amp_command:amp_command(), binary(),
-                    amp:amp_box()) -> binary().
+                    amp:amp_box()) -> iodata().
 encode_answer(Command, Id, Box) ->
-    [_ | _] = Box, % no empty boxes
     encode_box([{?AMP_KEY_ANSWER, string, []} | amp_command:response(Command)],
                [{?AMP_KEY_ANSWER, Id} | Box]).
 
 %% @doc Given an amp_command record, a message id, and an error code,
-%% and a description, return a binary encoding of the Amp Box that
+%% and a description, return an iodata encoding of the Amp Box that
 %% would implement the error box for a call.
 -spec encode_error(amp_command:amp_command(), binary(),
-                   binary(), binary()) -> binary().
+                   binary(), binary()) -> iodata().
 encode_error(Command, Id, ErrorCode, Description) ->
     {value, _} = lists:keysearch(ErrorCode, 1, amp_command:errors(Command)),
     encode_box([{?AMP_KEY_ERROR, string, []} | ?AMP_ERROR_PROTOCOL],
@@ -107,7 +106,7 @@ new_decoder() ->
                         {not_done, decoder()} |
                         {amp:amp_box(), decoder()}.
 decode_box(#decoder{box=Box, remainder=Remainder}=Decoder, Bin) ->
-    case decode_box(Box, <<Remainder/binary, Bin/binary>>) of
+    case decode_box_int(Box, <<Remainder/binary, Bin/binary>>) of
         {not_done, Box, Rest} ->
             {not_done, Decoder#decoder{box=Box, remainder=Rest}};
         {done, Box, Rest} ->
@@ -115,32 +114,22 @@ decode_box(#decoder{box=Box, remainder=Remainder}=Decoder, Bin) ->
     end.
 
 
-%% @doc Given an AmpList protocol and a box, return a binary encoding
-%% of the box that matches the protocol.
--spec encode_box(amp_command:amp_list(), amp:amp_box()) -> binary().
-encode_box(Protocol, Box) ->
-    IOList = encode_box_int(Protocol, Box),
-    [_, _ | _] = IOList, % no empty boxes
-    list_to_binary(IOList).
-
-
 % @private
 % @doc Encode the box according to the given protocol into the IOList.
--spec encode_box_int(amp_command:amp_list(), amp:amp_box()) -> iolist().
-encode_box_int([], _Box) ->
+-spec encode_box(amp_command:amp_list(), amp:amp_box()) -> iolist().
+encode_box([], _Box) ->
     [<<0, 0>>];
-encode_box_int([{Key, Type, Options} | Protocol], Box) ->
+encode_box([{Key, Type, Options} | Protocol], Box) ->
     case lists:keysearch(Key, 1, Box) of
         {value, {Key, Value}} ->
             <<_, _/binary>> = Key, % no empty keys
             EncKeyLength = encode_length(size(Key), ?AMP_MAX_KEY_LEN),
             EncValue = encode_value(Value, Type),
             EncLength = encode_length(iolist_size(EncValue), ?AMP_MAX_VAL_LEN),
-            [EncKeyLength, Key, EncLength, EncValue
-             | encode_box_int(Protocol, Box)];
+            [EncKeyLength, Key, EncLength, EncValue | encode_box(Protocol, Box)];
         false ->
             true = proplists:get_bool(optional, Options),
-            encode_box_int(Protocol, Box)
+            encode_box(Protocol, Box)
     end.
 
 % @private
