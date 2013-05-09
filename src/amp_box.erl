@@ -167,17 +167,6 @@ match_kvp(<<>>) ->
 
 
 % @private
-% @doc Consume the given key from the Protocol and return the
-% type of that key and the remaining protocol.
--spec consume_key(binary(), amp_command:amp_list()) ->
-                         {amp_command:amp_type(),
-                          amp_command:amp_list()}.
-consume_key(Key, Protocol) ->
-    {value, {Key, Type, _Options}, Protocol2} = lists:keytake(Key, 1, Protocol),
-    {Type, Protocol2}.
-
-
-% @private
 % @doc Encode a length, given the maximum value of that length.
 -spec encode_length(non_neg_integer(), non_neg_integer()) -> binary().
 encode_length(Length, Max) when Length =< Max ->
@@ -231,8 +220,8 @@ decode_value(ValBin, {amplist, Protocol}) ->
 -spec decode_amplist(binary(), amp_command:amp_list()) -> [amp:amp_box()].
 decode_amplist(<<>>, _Protocol) ->
     [];
-decode_amplist(ValBin, Protocol) ->
-    {done, KVPairs, Rest} = decode_box(Protocol, [], ValBin),
+decode_amplist(Bin, Protocol) ->
+    {done, KVPairs, Rest} = decode_box([], Bin),
     [lists:reverse(KVPairs) | decode_amplist(Rest, Protocol)].
 
 
