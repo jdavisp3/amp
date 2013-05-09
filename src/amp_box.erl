@@ -452,7 +452,8 @@ decode_12_test() ->
 decode_13_test() ->
     Decoder = new_decoder(),
     Input = <<0, 0>>,
-    ?assertError(_, test_one_by_one(Decoder, Input)).
+    ?assertMatch({{[], Decoder}, <<>>},
+                 test_one_by_one(Decoder, Input)).
 
 decode_14_test() ->
     Decoder = new_decoder(),
