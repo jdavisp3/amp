@@ -409,20 +409,17 @@ decode_5_test() ->
     ?assertError(_, test_one_by_one(Decoder, Input)).
 
 decode_6_test() ->
-    Protocol = [{<<"name">>, string, []}],
-    Decoder = new_decoder(Protocol),
+    Decoder = new_decoder(),
     Input = <<0, 4, "namx", 0, 5, "nimbo">>,
     ?assertError(_, test_one_by_one(Decoder, Input)).
 
 decode_7_test() ->
-    Protocol = [{<<"q">>, integer, []}],
-    Decoder = new_decoder(Protocol),
+    Decoder = new_decoder(),
     Input = <<0, 1, "q", 0, 5, "nimbo">>,
     ?assertError(_, test_one_by_one(Decoder, Input)).
 
 decode_8_test() ->
-    Protocol = [{<<";">>, float, []}],
-    Decoder = new_decoder(Protocol),
+    Decoder = new_decoder(),
     Input = <<0, 1, $;, 0, 3, "1.5", 0, 0, 1, 2, 3>>,
     ?assertMatch({done, [{<<";">>, 1.5}], <<1, 2, 3>>},
                  decode_box(Decoder, Input)),
@@ -431,8 +428,7 @@ decode_8_test() ->
                  decode_box(Decoder, Input2)).
 
 decode_9_test() ->
-    Protocol = [{<<"//">>, boolean, []}],
-    Decoder = new_decoder(Protocol),
+    Decoder = new_decoder(),
     Input1 = <<0, 2, "//", 0, 4, "True", 0, 0>>,
     ?assertMatch({done, [{<<"//">>, true}], <<>>},
                  decode_box(Decoder, Input1)),
@@ -441,9 +437,7 @@ decode_9_test() ->
                  decode_box(Decoder, Input2)).
 
 decode_10_test() ->
-    Protocol = [{<<"a">>, integer, [optional]},
-                {<<"b">>, integer, []}],
-    Decoder = new_decoder(Protocol),
+    Decoder = new_decoder(),
     Input1 = <<0, 1, $a, 0, 1, $4, 0, 1, $b, 0, 1, $5, 0, 0>>,
     ?assertMatch({done, [{<<"a">>, 4}, {<<"b">>, 5}], <<>>},
                  decode_box(Decoder, Input1)),
@@ -452,9 +446,7 @@ decode_10_test() ->
                  decode_box(Decoder, Input2)).
 
 decode_11_test() ->
-    Protocol = [{<<"a">>, integer, []},
-                {<<"b">>, integer, [optional]}],
-    Decoder = new_decoder(Protocol),
+    Decoder = new_decoder(),
     Input1 = <<0, 1, $a, 0, 1, $4, 0, 1, $b, 0, 1, $5, 0, 0>>,
     ?assertMatch({done, [{<<"a">>, 4}, {<<"b">>, 5}], <<>>},
                  decode_box(Decoder, Input1)),
@@ -463,11 +455,7 @@ decode_11_test() ->
                  decode_box(Decoder, Input2)).
 
 decode_12_test() ->
-    SubProto = [{<<"h">>, integer, []},
-                {<<"g">>, integer, [optional]}],
-    Protocol = [{<<"'">>, integer, []},
-                {<<"s">>, {amplist, SubProto}, [optional]}],
-    Decoder = new_decoder(Protocol),
+    Decoder = new_decoder(),
 
     Input1 = <<0, 1, $', 0, 1, $0, 0, 0, 1, 2, 3>>,
     ?assertMatch({done, [{<<"'">>, 0}], <<1, 2, 3>>},
@@ -490,40 +478,21 @@ decode_12_test() ->
     ?assertMatch({done, Output3, <<1, 2, 3>>}, decode_box(Decoder, Input3)).
 
 decode_13_test() ->
-    Protocol = [{"name", string, [optional]}],
-    Decoder = new_decoder(Protocol),
+    Decoder = new_decoder(),
     Input = <<0, 0>>,
     ?assertError(_, test_one_by_one(Decoder, Input)).
 
 decode_14_test() ->
-    Protocol = [{"", string, []}],
-    Decoder = new_decoder(Protocol),
+    Decoder = new_decoder(),
     Input = <<0, 0, 0, 5, "nimbo">>,
     ?assertError(_, test_one_by_one(Decoder, Input)).
 
 decode_15_test() ->
-    Protocol = [{<<"name">>, binary, []},
-                {<<"billy o">>, integer, []}],
-    Decoder = new_decoder(Protocol),
+    Decoder = new_decoder(),
     Input1 = <<0, 7, "billy o", 0, 5, "12345",
                0, 4, "name", 0, 5, "nimbo",
                0, 0>>,
     Output = {done, [{<<"billy o">>, 12345}, {<<"name">>, <<"nimbo">>}], <<>>},
     ?assertMatch(Output, test_one_by_one(Decoder, Input1)).
-
-decode_header_test_() ->
-    [
-     ?_assertMatch(not_enough, decode_header(<<>>)),
-     ?_assertMatch(not_enough, decode_header(<<0, 4, "_ask">>)),
-     ?_assertMatch({ask, <<"a">>, <<>>},
-                   decode_header(<<0, 4, "_ask", 0, 1, $a>>)),
-     ?_assertMatch({ask, <<"a">>, <<9>>},
-                   decode_header(<<0, 4, "_ask", 0, 1, $a, 9>>)),
-     ?_assertMatch({answer, <<"a">>, <<>>},
-                   decode_header(<<0, 7, "_answer", 0, 1, $a>>)),
-     ?_assertMatch({error, <<"a">>, <<>>},
-                   decode_header(<<0, 6, "_error", 0, 1, $a>>)),
-     ?_assertError(_, decode_header(<<0, 4, "_bad", 0, 1, $a>>))
-     ].
 
 -endif.
