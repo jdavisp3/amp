@@ -464,7 +464,7 @@ decode_15_test() ->
     Input = <<0, 7, "billy o", 0, 5, "12345",
               0, 4, "name", 0, 5, "nimbo",
               0, 0>>,
-    Output = {done, [{<<"billy o">>, 12345}, {<<"name">>, <<"nimbo">>}], <<>>},
+    Output = {[{<<"billy o">>, 12345}, {<<"name">>, <<"nimbo">>}], Decoder},
     ?assertMatch(Output, test_one_by_one(Decoder, Input)).
 
 -endif.
