@@ -201,7 +201,7 @@ pre_loop(CallbackOpts, {M, F, A}) ->
 
 % @private
 -spec process_data(decode_state(), binary()) ->
-                          {not_enough, decode_state()}
+                          {not_done, decode_state()}
                               | {amp:amp_box(), decode_state()}.
 process_data(DecodeState, Bin) ->
     ok.

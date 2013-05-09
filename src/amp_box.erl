@@ -104,14 +104,12 @@ new_decoder(Protocol) ->
 %% If the complete box is decoded, return the box we decoded and the
 %% unprocessed bytes. If we are not done, return the new state of the
 %% decoder.
--spec decode_box(#decoder{}, binary()) ->
-                        {not_done, #decoder{}} |
-                        {done, amp:amp_box(), Rest::binary()}.
-decode_box(Decoder, Packet) ->
-    Remainder = Decoder#decoder.remainder,
-    Whole = <<Remainder/binary, Packet/binary>>,
-    Result = decode_box(Decoder#decoder.protocol,
-                        Decoder#decoder.box, Whole),
+-spec decode_box(decoder(), binary()) ->
+                        {not_done, decoder()} |
+                        {amp:amp_box(), decoder()}.
+decode_box(#decoder{box=Box, remainder=Remainder}=Decoder, Bin) ->
+    Whole = <<Remainder/binary, Bin/binary>>,
+    Result = decode_box(Box, Whole),
     case Result of
         {not_done, Protocol, Box, Rest} ->
             {not_done, Decoder#decoder{protocol=Protocol, box=Box,
