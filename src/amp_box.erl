@@ -105,8 +105,8 @@ new_decoder() ->
 -spec decode_box(decoder(), binary()) ->
                         {not_done, decoder()} |
                         {amp:amp_box(), decoder()}.
-decode_box(#decoder{box=Box, rest=Rest}=Decoder, Bin) ->
-    case decode_box_int(Box, <<Rest/binary, Bin/binary>>) of
+decode_box(#decoder{rest=Old}=Decoder, New) ->
+    case decode_box_int(Decoder#decoder.box, <<Old/binary, New/binary>>) of
         {not_done, Box, Rest} ->
             {not_done, Decoder#decoder{box=Box, rest=Rest}};
         {Box, Rest} ->
