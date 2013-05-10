@@ -393,10 +393,12 @@ decode_7_test() ->
 decode_8_test() ->
     Decoder = new_decoder(),
     Input = <<0, 1, $;, 0, 3, "1.5", 0, 0, 1, 2, 3>>,
-    ?assertMatch({done, [{<<";">>, 1.5}], <<1, 2, 3>>},
+    ?assertMatch({[{<<";">>, <<"1.5">>}],
+                  #decoder{rest = <<1, 2, 3>>}},
                  decode_box(Decoder, Input)),
     Input2 = <<0, 1, $;, 0, 1, "1", 0, 0, 1, 2, 3>>,
-    ?assertMatch({done, [{<<";">>, 1.0}], <<1, 2, 3>>},
+    ?assertMatch({[{<<";">>, <<"1.0">>}],
+                  #decoder{rest = <<1, 2, 3>>}},
                  decode_box(Decoder, Input2)).
 
 decode_9_test() ->
