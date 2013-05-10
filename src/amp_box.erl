@@ -447,9 +447,12 @@ decode_12_test() ->
                 0, 1, $h, 0, 1, $1, 0, 1, $g, 0, 1, $2, 0, 0,
                 0, 1, $h, 0, 1, $5, 0, 0,
               0, 0, 1, 2, 3>>,
-    Output3 = [{<<"'">>, 0}, {<<"s">>, [[{<<"h">>, 1},
-                                         {<<"g">>, 2}], [{<<"h">>, 5}]]}],
-    ?assertMatch({done, Output3, <<1, 2, 3>>}, decode_box(Decoder, Input3)).
+    Output3 = ,
+    ?assertMatch({[{<<"'">>, <<"0">>},
+                   {<<"s">>, <<0, 1, $h, 0, 1, $1, 0, 1, $g, 0, 1, $2, 0, 0,
+                               0, 1, $h, 0, 1, $5, 0, 0>>}],
+                  #decoder{rest = <<1, 2, 3>>}},
+                 decode_box(Decoder, Input3)).
 
 decode_13_test() ->
     Decoder = new_decoder(),
