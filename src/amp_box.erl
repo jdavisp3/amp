@@ -313,10 +313,12 @@ encode_ask_test() ->
 encode_answer_test() ->
     Cmd = amp_command:new(<<"n">>, nil,
                           [{<<"b">>, string, []}], [], []),
-    Bin = encode_answer(Cmd, <<"1">>, [{<<"b">>, "B"}]),
+    Bin = iolist_to_binary(encode_answer(Cmd, <<"1">>, [{<<"b">>, "B"}])),
     ?assertMatch(Bin, <<0, 7, "_answer", 0, 1, "1",
                         0, 1, "b", 0, 1, "B", 0, 0>>),
-    ?assertMatch({answer, <<"1">>, _}, decode_box(new_decoder(), Bin)).
+    ?assertMatch({[{<<"_answer">>, <<"1">>},
+                   {<<"b">>, <<"B">>}], Decodeer},
+                 decode_box(new_decoder(), Bin)).
 
 encode_error_test() ->
     Cmd = amp_command:new(<<"n">>, nil, nil, 
@@ -326,15 +328,15 @@ encode_error_test() ->
     ?assertMatch(Bin1, <<0, 6, "_error", 0, 1, "1",
                          0, 11, "_error_code", 0, 1, "A",
                          0, 18, "_error_description", 0, 2, "AA", 0, 0>>),
-    ?assertMatch({[{<<"_error">>,<<"1">>},
-                   {<<"_error_code">>,<<"A">>},
-                   {<<"_error_description">>,<<"AA">>}], Decoder},
+    ?assertMatch({[{<<"_error">>, <<"1">>},
+                   {<<"_error_code">>, <<"A">>},
+                   {<<"_error_description">>, <<"AA">>}], Decoder},
                  decode_box(new_decoder(), Bin1)),
 
     Bin2 = iolist_to_binary(encode_error(Cmd, "2", <<"B">>, <<"BB">>)),
-    ?assertMatch({[{<<"_error">>,<<"2">>},
-                   {<<"_error_code">>,<<"B">>},
-                   {<<"_error_description">>,<<"BB">>}], Decoder},
+    ?assertMatch({[{<<"_error">>, <<"2">>},
+                   {<<"_error_code">>, <<"B">>},
+                   {<<"_error_description">>, <<"BB">>}], Decoder},
                  decode_box(new_decoder(), Bin2)).
 
 
