@@ -397,7 +397,7 @@ decode_8_test() ->
                   #decoder{rest = <<1, 2, 3>>}},
                  decode_box(Decoder, Input)),
     Input2 = <<0, 1, $;, 0, 1, "1", 0, 0, 1, 2, 3>>,
-    ?assertMatch({[{<<";">>, <<"1.0">>}],
+    ?assertMatch({[{<<";">>, <<"1">>}],
                   #decoder{rest = <<1, 2, 3>>}},
                  decode_box(Decoder, Input2)).
 
