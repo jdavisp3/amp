@@ -402,10 +402,10 @@ decode_8_test() ->
 decode_9_test() ->
     Decoder = new_decoder(),
     Input1 = <<0, 2, "//", 0, 4, "True", 0, 0>>,
-    ?assertMatch({done, [{<<"//">>, true}], <<>>},
+    ?assertMatch({[{<<"//">>, <<"True">>}], Decoder},
                  decode_box(Decoder, Input1)),
     Input2 = <<0, 2, "//", 0, 5, "False", 0, 0>>,
-    ?assertMatch({done, [{<<"//">>, false}], <<>>},
+    ?assertMatch({[{<<"//">>, <<"False">>}], Decoder},
                  decode_box(Decoder, Input2)).
 
 decode_10_test() ->
