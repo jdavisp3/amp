@@ -359,7 +359,7 @@ decode_2_test() ->
 decode_3_test() ->
     Decoder = new_decoder(),
     Input = <<0, 1, $a, 0, 1, $4, 0, 0, 14>>,
-    ?assertMatch({done, [{<<"a">>, 4}], <<14>>},
+    ?assertMatch({[{<<"a">>, <<"4">>}], #decoder{rest = <<14>>}},
                  decode_box(Decoder, Input)).
 
 decode_4_test() ->
