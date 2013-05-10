@@ -331,10 +331,11 @@ encode_error_test() ->
                    {<<"_error_description">>,<<"AA">>}], Decoder},
                  decode_box(new_decoder(), Bin1)),
 
-    Bin2 = encode_error(Cmd, "2", <<"B">>, <<"BB">>),
-    Out2 = {done, [{?AMP_KEY_ERROR_CODE, "B"},
-                   {?AMP_KEY_ERROR_DESCRIPTION, "BB"}], <<>>},
-    ?assertMatch(Out2, decode_box(new_decoder(), Bin2)).
+    Bin2 = iolist_to_binary(encode_error(Cmd, "2", <<"B">>, <<"BB">>)),
+    ?assertMatch({[{<<"_error">>,<<"2">>},
+                   {<<"_error_code">>,<<"B">>},
+                   {<<"_error_description">>,<<"BB">>}], Decoder},
+                 decode_box(new_decoder(), Bin2)).
 
 
 test_one_by_one(Decoder, <<Byte, Input/binary>>) ->
