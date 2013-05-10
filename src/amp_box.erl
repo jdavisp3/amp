@@ -423,7 +423,7 @@ decode_11_test() ->
     ?assertMatch({[{<<"a">>, <<"4">>}, {<<"b">>, <<"5">>}], Decoder},
                  decode_box(Decoder, Input1)),
     Input2 = <<0, 1, $a, 0, 1, $5, 0, 0>>,
-    ?assertMatch({done, [{<<"a">>, 5}], <<>>},
+    ?assertMatch({[{<<"a">>, <<"5">>}], Decodeer},
                  decode_box(Decoder, Input2)).
 
 decode_12_test() ->
