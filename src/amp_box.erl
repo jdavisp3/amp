@@ -373,7 +373,7 @@ decode_4_test() ->
     Input2 = <<0, 4, "name", 0, 5, "nimbo",
                0, 7, "billy o", 0, 5, "12345",
                0, 0>>,
-    ?assertMatch({{[{<<"name">>, "nimbo"},
+    ?assertMatch({{[{<<"name">>, <<"nimbo">>},
                     {<<"billy o">>, <<"12345">>}], Decoder}, <<>>},
                  test_one_by_one(Decoder, Input2)).
 
