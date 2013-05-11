@@ -225,8 +225,6 @@ match_kvp(<<0, KeyLen, Key:KeyLen/binary,
             ValLen:16/unsigned-big, Val:ValLen/binary, Rest/binary>>) ->
     {Key, Val, Rest};
 match_kvp(<<0, _/binary>>) ->
-    not_done;
-match_kvp(<<>>) ->
     not_done.
 
 
