@@ -116,7 +116,9 @@ decode_bin_box(#decoder{rest=Old}=Decoder, New) ->
     end.
 
 -spec identify_bin_box(amp:amp_bin_box()) ->
-                              {ask, amp:amp_name(), Id::binary(), amp:amp_bin_box()}.
+                              {ask, amp:amp_name(), Id::binary(), amp:amp_bin_box()}
+                                  | {answer, Id::binary(), amp:amp_bin_box()}
+                                  | {error, Id::binary(), amp:amp_bin_box()}.
 identify_bin_box(Box) ->
     ok.
 
