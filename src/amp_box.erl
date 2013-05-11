@@ -537,7 +537,9 @@ identify_bin_box_test_() ->
                    identify_bin_box([{<<"_answer">>, <<"a">>}])),
      ?_assertMatch({error, <<"a">>, []},
                    identify_bin_box([{<<"_error">>, <<"a">>}])),
-     ?_assertError(_, identify_bin_box([]))
+     ?_assertError(_, identify_bin_box([])),
+     ?_assertError(_, identify_bin_box([{<<"_ask">>, <<"a">>}])),
+     ?_assertError(_, identify_bin_box([{<<"_command">>, <<"a">>}]))
     ].
 
 -endif.
