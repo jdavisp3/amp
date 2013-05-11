@@ -607,6 +607,7 @@ decode_value_test_() ->
      ?_assertMatch(-1, decode_value(<<"-1">>, integer)),
      ?_assertMatch(1.5, decode_value(<<"1.5">>, float)),
      ?_assertMatch(1.5, decode_value(<<"1.50000000000000000000e+00">>, float)),
+     ?_assertMatch(1.0, decode_value(<<"1">>, float)),
      ?_assertMatch(true, decode_value(<<"True">>, boolean)),
      ?_assertMatch(false, decode_value(<<"False">>, boolean)),
      ?_assertMatch([1,2,3], decode_value(<<1,2,3>>, string)),
