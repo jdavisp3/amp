@@ -137,6 +137,10 @@ identify_bin_box([{?AMP_KEY_ASK, _}|_], _, _, _, _) ->
 identify_bin_box([{?AMP_KEY_ANSWER, Id}|Rest], undefined, undefined, undefined, Box) ->
     identify_bin_box(Rest, answer, Id, undefined, Box);
 identify_bin_box([{?AMP_KEY_ANSWER, _}|_], _, _, _, _) ->
+    error(illegal_box);
+identify_bin_box([{?AMP_KEY_ERROR, Id}|Rest], undefined, undefined, undefined, Box) ->
+    identify_bin_box(Rest, error, Id, undefined, Box);
+identify_bin_box([{?AMP_KEY_ERROR, _}|_], _, _, _, _) ->
     error(illegal_box).
 
 
