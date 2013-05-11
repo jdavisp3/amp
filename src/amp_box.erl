@@ -540,7 +540,15 @@ identify_bin_box_test_() ->
      ?_assertError(_, identify_bin_box([])),
      ?_assertError(_, identify_bin_box([{<<"a">>, <<"b">>}])),
      ?_assertError(_, identify_bin_box([{<<"_ask">>, <<"a">>}])),
-     ?_assertError(_, identify_bin_box([{<<"_command">>, <<"a">>}]))
+     ?_assertError(_, identify_bin_box([{<<"_command">>, <<"a">>}])),
+     ?_assertError(_, identify_bin_box([{<<"_answer">>, <<"a">>},
+                                        {<<"_ask">>, <<"a">>}])),
+     ?_assertError(_, identify_bin_box([{<<"_answer">>, <<"a">>},
+                                        {<<"_command">>, <<"a">>}])),
+     ?_assertError(_, identify_bin_box([{<<"_error">>, <<"a">>},
+                                        {<<"_ask">>, <<"a">>}])),
+     ?_assertError(_, identify_bin_box([{<<"_error">>, <<"a">>},
+                                        {<<"_command">>, <<"a">>}]))
     ].
 
 -endif.
