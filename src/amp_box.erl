@@ -123,7 +123,14 @@ identify_bin_box(Box) ->
 
 identify_bin_box([], ask, Id, Name, Box)
   when is_binary(Id), is_binary(Name) ->
-    {ask, Id, Name, Box}.
+    {ask, Id, Name, Box};
+identify_bin_box([], answer, Id, undefined, Box)
+  when is_binary(Id) ->
+    {answer, Id, Box};
+identify_bin_box([], error, Id, undefined, Box)
+  when is_binary(Id) ->
+    {error, Id, Box}.
+
 
 -spec decode_box(amp:amp_list(), amp:amp_bin_box()) -> amp:amp_box().
 decode_box(Protocol, Box) ->
