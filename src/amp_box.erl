@@ -301,13 +301,13 @@ encode_test_() ->
 
 encode_ask_test() ->
     Cmd = amp_command:new(<<"n">>, [{<<"a">>, string, []}], nil, nil, []),
-    Bin = encode_ask(Cmd, <<"1">>, [{<<"a">>, "A"}]),
+    Bin = iolist_to_binary(encode_ask(Cmd, <<"1">>, [{<<"a">>, "A"}])),
     ?assertMatch(Bin, <<0, 4, "_ask", 0, 1, "1",
                         0, 8, "_command", 0, 1, "n",
                         0, 1, "a", 0, 1, "A", 0, 0>>),
-    ?assertMatch({ask, <<"1">>,
-                  <<0, 8, "_command", 0, 1, "n",
-                    0, 1, "a", 0, 1, "A", 0, 0>>},
+    ?assertMatch({[{<<"_ask">>,<<"1">>},
+                   {<<"_command">>,<<"n">>},
+                   {<<"a">>,<<"A">>}], Decoder},
                  decode_box(new_decoder(), Bin)).
 
 encode_answer_test() ->
