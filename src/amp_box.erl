@@ -125,11 +125,9 @@ identify_bin_box([], ask, _, undefined, _) ->
     error(illegal_box);
 identify_bin_box([], ask, Id, Name, Box) ->
     {ask, Id, Name, Box};
-identify_bin_box([], answer, Id, undefined, Box)
-  when is_binary(Id) ->
+identify_bin_box([], answer, Id, undefined, Box) ->
     {answer, Id, Box};
-identify_bin_box([], error, Id, undefined, Box)
-  when is_binary(Id) ->
+identify_bin_box([], error, Id, undefined, Box) ->
     {error, Id, Box};
 identify_bin_box([{?AMP_KEY_ASK, Id}|Rest], undefined, undefined, Name, Box) ->
     identify_bin_box(Rest, ask, Id, Name, Box);
