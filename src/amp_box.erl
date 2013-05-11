@@ -117,16 +117,16 @@ decode_box(#decoder{rest=Old}=Decoder, New) ->
 % @private
 % @doc Encode the box according to the given protocol into iodata.
 -spec encode_box(amp_command:amp_list(), amp:amp_box()) -> iodata().
-encode_box([], _Box) ->
+encode_box([], []) ->
     [<<0, 0>>];
 encode_box([{Key, Type, Options} | Protocol], Box) ->
-    case lists:keysearch(Key, 1, Box) of
-        {value, {Key, Value}} ->
+    case lists:keytake(Key, 1, Box) of
+        {value, {Key, Value}, Box2} ->
             <<_, _/binary>> = Key, % no empty keys
             EncKeyLength = encode_length(size(Key), ?AMP_MAX_KEY_LEN),
             EncValue = encode_value(Value, Type),
             EncLength = encode_length(iolist_size(EncValue), ?AMP_MAX_VAL_LEN),
-            [EncKeyLength, Key, EncLength, EncValue | encode_box(Protocol, Box)];
+            [EncKeyLength, Key, EncLength, EncValue | encode_box(Protocol, Box2)];
         false ->
             true = proplists:get_bool(optional, Options),
             encode_box(Protocol, Box)
