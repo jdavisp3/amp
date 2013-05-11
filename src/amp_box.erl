@@ -161,7 +161,14 @@ decode_box(Protocol, BinBox) ->
 % @private
 -spec decode_box(amp:amp_list(), amp:amp_bin_box(), amp:amp_box()) -> amp:amp_box().
 decode_box([], [], Box) ->
-    Box.
+    Box;
+decode_box([{Name, _, Options} | Proto], [], Box) ->
+    case proplists:get_bool(optional, Options) of
+        true ->
+            decode_box(Proto, [], Box);
+        false ->
+            error({missing_key, Name})
+    end.
 
 
 % @private
