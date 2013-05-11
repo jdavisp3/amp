@@ -519,6 +519,8 @@ decode_15_test() ->
 
 identify_bin_box_test_() ->
     [
+     ?_assertMatch({answer, <<"a">>, []},
+                   identify_bin_box([{<<"_answer">>, <<"a">>}])),
      ?_assertError(_, identify_bin_box([]))
     ].
 
