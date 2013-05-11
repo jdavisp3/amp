@@ -168,6 +168,13 @@ decode_box([{Name, _, Options} | Proto], [], Box) ->
             decode_box(Proto, [], Box);
         false ->
             error({missing_key, Name})
+    end;
+decode_box(Proto, [{Key, Bin} | BinBox], Box) ->
+    case lists:keytake(Key, 0, Proto) of
+        {value, {_, Type, _}, Proto2} ->
+            decode_box(Proto2, BinBox, [decode_value(Bin, Type) | Box]);
+        false ->
+            error({unexpected_key, Key})
     end.
 
 
