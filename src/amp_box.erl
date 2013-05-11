@@ -579,7 +579,10 @@ identify_bin_box_test_() ->
 
 decode_box_test_() ->
     [
-     ?_assertMatch([], decode_box([], []))
+     ?_assertMatch([], decode_box([], [])),
+     ?_assertMatch([], decode_box([{<<"a">>, integer, [optional]}], [])),
+     ?_assertError({missing_key, <<"a">>},
+                   decode_box([{<<"a">>, integer, []}], []))
     ].
 
 -endif.
