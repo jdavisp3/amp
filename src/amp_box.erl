@@ -519,6 +519,9 @@ decode_15_test() ->
 
 identify_bin_box_test_() ->
     [
+     ?_assertMatch({ask, <<"a">>, <<"b">>, []},
+                   identify_bin_box([{<<"_ask">>, <<"a">>},
+                                     {<<"_command">>, <<"b">>}])),
      ?_assertMatch({answer, <<"a">>, []},
                    identify_bin_box([{<<"_answer">>, <<"a">>}])),
      ?_assertMatch({error, <<"a">>, []},
