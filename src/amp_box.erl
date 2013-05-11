@@ -588,6 +588,9 @@ decode_box_test_() ->
     [
      ?_assertMatch([], decode_box([], [])),
      ?_assertMatch([], decode_box([{<<"a">>, integer, [optional]}], [])),
+     ?_assertMatch([{<<"a">>, 123}],
+                   decode_box([{<<"a">>, integer, []}],
+                              [{<<"a">>, <<"123">>]))),
      ?_assertError({missing_key, <<"a">>},
                    decode_box([{<<"a">>, integer, []}], []))
     ].
