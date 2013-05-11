@@ -285,7 +285,7 @@ decode_value(ValBin, {amplist, Protocol}) ->
 decode_amplist(<<>>, _) ->
     [];
 decode_amplist(Bin, Proto) ->
-    {BinBox, Rest} = decode_bin_box(new_decoder(), Bin),
+    {BinBox, #decoder{rest=Rest}} = decode_bin_box(new_decoder(), Bin),
     [decode_box(Proto, BinBox) | decode_amplist(Rest, Proto)].
 
 
@@ -611,7 +611,7 @@ decode_value_test_() ->
      ?_assertMatch(false, decode_value(<<"False">>, boolean)),
      ?_assertMatch([1,2,3], decode_value(<<1,2,3>>, string)),
      ?_assertMatch(<<1,2,3>>, decode_value(<<1,2,3>>, binary)),
-     ?_assertMatch([],
+     ?_assertMatch([[{<<"g">>, 2}, {<<"h">>, 1}]],
                    decode_value(<<0, 1, $h, 0, 1, $1,
                                   0, 1, $g, 0, 1, $2, 0, 0>>,
                                 {amplist, [{<<"h">>, integer, []},
