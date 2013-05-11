@@ -295,8 +295,7 @@ encode_test_() ->
      ?_assertError(_, encode_box([{<<"aa">>, string, []}], [{<<"aa">>, 1}])),
      ?_assertError(_, encode_box([{<<"">>, string, []}], [{<<"">>, "a"}])),
      ?_assertError(_, encode_box([{<<"aa">>, float, []}], [{<<"aa">>, "apple"}])),
-     ?_assertError(_, encode_box([{<<"b">>, integer, [optional]}], [{<<"a">>, 1}])),
-     ?_assertError(_, encode_box([{<<"b">>, integer, [optional]}], []))
+     ?_assertError(_, encode_box([{<<"b">>, integer, [optional]}], [{<<"a">>, 1}]))
     ].
 
 encode_ask_test() ->
