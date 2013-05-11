@@ -140,7 +140,11 @@ identify_bin_box([{?AMP_KEY_ANSWER, _}|_], _, _, _, _) ->
 identify_bin_box([{?AMP_KEY_ERROR, Id}|Rest], undefined, undefined, undefined, Box) ->
     identify_bin_box(Rest, error, Id, undefined, Box);
 identify_bin_box([{?AMP_KEY_ERROR, _}|_], _, _, _, _) ->
-    error(illegal_box).
+    error(illegal_box);
+identify_bin_box([{?AMP_KEY_COMMAND, Name}|Rest], undefined, undefined, undefined, Box) ->
+    identify_bin_box(Rest, undefined, undefined, Name, Box);
+identify_bin_box([{?AMP_KEY_COMMAND, Name}|Rest], ask, Id, undefined, Box) ->
+    identify_bin_box(Rest, ask, Id, Name, Box).
 
 
 -spec decode_box(amp:amp_list(), amp:amp_bin_box()) -> amp:amp_box().
