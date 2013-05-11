@@ -25,7 +25,7 @@
 
 %% API
 -export([encode_ask/3, encode_answer/3, encode_error/4,
-         new_decoder/0, decode_box/2]).
+         new_decoder/0, decode_bin_box/2]).
 
 -export_type([decoder/0]).
 
@@ -93,7 +93,8 @@ encode_error(Command, Id, ErrorCode, Description) ->
 
 
 %% @doc Return a new decoder object suitable for unserializing a wire
-%% format of an Amp box. Decoders are required arguments for decode_box/2.
+%% format of an Amp box. Decoders are required arguments for
+%% decode_bin_box/2.
 -spec new_decoder() -> #decoder{}.
 new_decoder() ->
     #decoder{}.
@@ -102,11 +103,11 @@ new_decoder() ->
 % If the complete box is decoded, return the box we decoded and a
 % new decoder state. The decoder may contain another box, so
 % a second decode call with an empty binary is needed.
--spec decode_box(decoder(), binary()) ->
-                        {not_done, decoder()} |
-                        {amp:amp_box(), decoder()}.
-decode_box(#decoder{rest=Old}=Decoder, New) ->
-    case decode_box_int(Decoder#decoder.box, <<Old/binary, New/binary>>) of
+-spec decode_bin_box(decoder(), binary()) ->
+                            {not_done, decoder()} |
+                            {amp:amp_bin_box(), decoder()}.
+decode_bin_box(#decoder{rest=Old}=Decoder, New) ->
+    case decode_bin_box_int(Decoder#decoder.box, <<Old/binary, New/binary>>) of
         {not_done, Box, Rest} ->
             {not_done, Decoder#decoder{box=Box, rest=Rest}};
         {Box, Rest} ->
@@ -134,19 +135,19 @@ encode_box([{Key, Type, Options} | Protocol], Box) ->
 
 % @private
 % @doc Decode a binary box as much as possible and return the results.
--spec decode_box_int(amp:amp_box(), binary()) ->
-                            {not_done, amp:amp_box(), binary()}
-                                | {amp:amp_box(), binary()}.
-decode_box_int(Box, Bin) when size(Bin) < 2 ->
+-spec decode_bin_box_int(amp:amp_bin_box(), binary()) ->
+                                {not_done, amp:amp_bin_box(), binary()}
+                                    | {amp:amp_bin_box(), binary()}.
+decode_bin_box_int(Box, Bin) when size(Bin) < 2 ->
     {not_done, Box, Bin};
-decode_box_int(Box, <<0, 0, Rest/binary>>) ->
+decode_bin_box_int(Box, <<0, 0, Rest/binary>>) ->
     {Box, Rest};
-decode_box_int(Box, Bin) ->
+decode_bin_box_int(Box, Bin) ->
     case match_kvp(Bin) of
         not_done ->
             {not_done, Box, Bin};
         {Key, ValBin, Rest} ->
-            decode_box_int([{Key, ValBin} | Box], Rest)
+            decode_bin_box_int([{Key, ValBin} | Box], Rest)
     end.
 
 % @private
@@ -221,7 +222,7 @@ decode_value(ValBin, {amplist, Protocol}) ->
 decode_amplist(<<>>, _Protocol) ->
     [];
 decode_amplist(Bin, Protocol) ->
-    {done, KVPairs, Rest} = decode_box([], Bin),
+    {done, KVPairs, Rest} = decode_bin_box([], Bin),
     [lists:reverse(KVPairs) | decode_amplist(Rest, Protocol)].
 
 
@@ -308,7 +309,7 @@ encode_ask_test() ->
     ?assertMatch({[{<<"_ask">>,<<"1">>},
                    {<<"_command">>,<<"n">>},
                    {<<"a">>,<<"A">>}], Decoder},
-                 decode_box(new_decoder(), Bin)).
+                 decode_bin_box(new_decoder(), Bin)).
 
 encode_answer_test() ->
     Cmd = amp_command:new(<<"n">>, nil,
@@ -318,7 +319,7 @@ encode_answer_test() ->
                         0, 1, "b", 0, 1, "B", 0, 0>>),
     ?assertMatch({[{<<"_answer">>, <<"1">>},
                    {<<"b">>, <<"B">>}], Decodeer},
-                 decode_box(new_decoder(), Bin)).
+                 decode_bin_box(new_decoder(), Bin)).
 
 encode_error_test() ->
     Cmd = amp_command:new(<<"n">>, nil, nil, 
@@ -331,17 +332,17 @@ encode_error_test() ->
     ?assertMatch({[{<<"_error">>, <<"1">>},
                    {<<"_error_code">>, <<"A">>},
                    {<<"_error_description">>, <<"AA">>}], Decoder},
-                 decode_box(new_decoder(), Bin1)),
+                 decode_bin_box(new_decoder(), Bin1)),
 
     Bin2 = iolist_to_binary(encode_error(Cmd, "2", <<"B">>, <<"BB">>)),
     ?assertMatch({[{<<"_error">>, <<"2">>},
                    {<<"_error_code">>, <<"B">>},
                    {<<"_error_description">>, <<"BB">>}], Decoder},
-                 decode_box(new_decoder(), Bin2)).
+                 decode_bin_box(new_decoder(), Bin2)).
 
 
 test_one_by_one(Decoder, <<Byte, Input/binary>>) ->
-    case decode_box(Decoder, <<Byte>>) of
+    case decode_bin_box(Decoder, <<Byte>>) of
         {not_done, Decoder1} ->
             test_one_by_one(Decoder1, Input);
         Result ->
@@ -350,9 +351,9 @@ test_one_by_one(Decoder, <<Byte, Input/binary>>) ->
 
 decode_1_test() ->
     Decoder1 = new_decoder(),
-    {not_done, Decoder2} = decode_box(Decoder1, <<0>>),
+    {not_done, Decoder2} = decode_bin_box(Decoder1, <<0>>),
     ?assert(Decoder2#decoder.box == []),
-    {not_done, Decoder3} = decode_box(Decoder2, <<1, $a>>),
+    {not_done, Decoder3} = decode_bin_box(Decoder2, <<1, $a>>),
     ?assert(Decoder3#decoder.rest == <<0, 1, $a>>),
     ?assert(Decoder3#decoder.box == []).
 
@@ -360,13 +361,13 @@ decode_2_test() ->
     Decoder = new_decoder(),
     Input = <<0, 1, $a, 0, 1, $1, 0, 0>>,
     ?assertMatch({[{<<"a">>, <<"1">>}], Decoder},
-                 decode_box(Decoder, Input)).
+                 decode_bin_box(Decoder, Input)).
 
 decode_3_test() ->
     Decoder = new_decoder(),
     Input = <<0, 1, $a, 0, 1, $4, 0, 0, 14>>,
     ?assertMatch({[{<<"a">>, <<"4">>}], #decoder{rest = <<14>>}},
-                 decode_box(Decoder, Input)).
+                 decode_bin_box(Decoder, Input)).
 
 decode_4_test() ->
     Decoder = new_decoder(),
@@ -403,45 +404,45 @@ decode_8_test() ->
     Input = <<0, 1, $;, 0, 3, "1.5", 0, 0, 1, 2, 3>>,
     ?assertMatch({[{<<";">>, <<"1.5">>}],
                   #decoder{rest = <<1, 2, 3>>}},
-                 decode_box(Decoder, Input)),
+                 decode_bin_box(Decoder, Input)),
     Input2 = <<0, 1, $;, 0, 1, "1", 0, 0, 1, 2, 3>>,
     ?assertMatch({[{<<";">>, <<"1">>}],
                   #decoder{rest = <<1, 2, 3>>}},
-                 decode_box(Decoder, Input2)).
+                 decode_bin_box(Decoder, Input2)).
 
 decode_9_test() ->
     Decoder = new_decoder(),
     Input1 = <<0, 2, "//", 0, 4, "True", 0, 0>>,
     ?assertMatch({[{<<"//">>, <<"True">>}], Decoder},
-                 decode_box(Decoder, Input1)),
+                 decode_bin_box(Decoder, Input1)),
     Input2 = <<0, 2, "//", 0, 5, "False", 0, 0>>,
     ?assertMatch({[{<<"//">>, <<"False">>}], Decoder},
-                 decode_box(Decoder, Input2)).
+                 decode_bin_box(Decoder, Input2)).
 
 decode_10_test() ->
     Decoder = new_decoder(),
     Input1 = <<0, 1, $a, 0, 1, $4, 0, 1, $b, 0, 1, $5, 0, 0>>,
     ?assertMatch({[{<<"a">>, <<"4">>}, {<<"b">>, <<"5">>}], Decoder},
-                 decode_box(Decoder, Input1)),
+                 decode_bin_box(Decoder, Input1)),
     Input2 = <<0, 1, $b, 0, 1, $5, 0, 0>>,
     ?assertMatch({[{<<"b">>, <<"5">>}], Decoder},
-                 decode_box(Decoder, Input2)).
+                 decode_bin_box(Decoder, Input2)).
 
 decode_11_test() ->
     Decoder = new_decoder(),
     Input1 = <<0, 1, $a, 0, 1, $4, 0, 1, $b, 0, 1, $5, 0, 0>>,
     ?assertMatch({[{<<"a">>, <<"4">>}, {<<"b">>, <<"5">>}], Decoder},
-                 decode_box(Decoder, Input1)),
+                 decode_bin_box(Decoder, Input1)),
     Input2 = <<0, 1, $a, 0, 1, $5, 0, 0>>,
     ?assertMatch({[{<<"a">>, <<"5">>}], Decoder},
-                 decode_box(Decoder, Input2)).
+                 decode_bin_box(Decoder, Input2)).
 
 decode_12_test() ->
     Decoder = new_decoder(),
 
     Input1 = <<0, 1, $', 0, 1, $0, 0, 0, 1, 2, 3>>,
     ?assertMatch({[{<<"'">>, <<"0">>}], #decoder{rest = <<1, 2, 3>>}},
-                 decode_box(Decoder, Input1)),
+                 decode_bin_box(Decoder, Input1)),
 
     Input2 = <<0, 1, $', 0, 1, $0,
               0, 1, $s, 0, 14,
@@ -450,7 +451,7 @@ decode_12_test() ->
     ?assertMatch({[{<<"'">>, <<"0">>},
                    {<<"s">>, <<0, 1, $h, 0, 1, $1, 0, 1, $g, 0, 1, $2, 0, 0>>}],
                   #decoder{rest = <<1, 2, 3>>}},
-                 decode_box(Decoder, Input2)),
+                 decode_bin_box(Decoder, Input2)),
 
     Input3 = <<0, 1, $', 0, 1, $0,
               0, 1, $s, 0, 22,
@@ -461,7 +462,7 @@ decode_12_test() ->
                    {<<"s">>, <<0, 1, $h, 0, 1, $1, 0, 1, $g, 0, 1, $2, 0, 0,
                                0, 1, $h, 0, 1, $5, 0, 0>>}],
                   #decoder{rest = <<1, 2, 3>>}},
-                 decode_box(Decoder, Input3)).
+                 decode_bin_box(Decoder, Input3)).
 
 decode_13_test() ->
     Decoder = new_decoder(),

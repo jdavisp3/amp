@@ -14,14 +14,14 @@
 
 -module(amp).
 
--export_type([amp_box/0, amp_kvp/0]).
+-export_type([amp_box/0, amp_bin_box/0]).
 
 -export_type([amp_type/0, amp_list/0, amp_name/0,
               amp_option/0, amp_error/0, amp_error_option/0,
               amp_command_option/0, amp_command/0]).
 
--type amp_box() :: [amp_kvp()].
--type amp_kvp() :: {binary(), term()}.
+-type amp_box() :: [{binary(), any()}].
+-type amp_bin_box() :: [{binary(), binary()}].
 
 -type amp_type() :: 'string' | 'binary' | 'integer' | 'float' | 'boolean'
                   | {'amplist', amp_list()}.
