@@ -609,7 +609,7 @@ decode_value_test_() ->
      ?_assertMatch(1.5, decode_value(<<"1.50000000000000000000e+00">>, float)),
      ?_assertMatch(true, decode_value(<<"True">>, boolean)),
      ?_assertMatch(false, decode_value(<<"False">>, boolean)),
-     ?_assertMatch([1,2,3], decode_value(<<1,2,3>>, list)),
+     ?_assertMatch([1,2,3], decode_value(<<1,2,3>>, string)),
      ?_assertMatch(<<1,2,3>>, decode_value(<<1,2,3>>, binary))
     ].
 
