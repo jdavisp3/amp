@@ -115,11 +115,15 @@ decode_bin_box(#decoder{rest=Old}=Decoder, New) ->
     end.
 
 -spec identify_bin_box(amp:amp_bin_box()) ->
-                              {ask, amp:amp_name(), Id::binary(), amp:amp_bin_box()}
+                              {ask, Id::binary(), Command::binary(), amp:amp_bin_box()}
                                   | {answer, Id::binary(), amp:amp_bin_box()}
                                   | {error, Id::binary(), amp:amp_bin_box()}.
 identify_bin_box(Box) ->
-    ok.
+    identify_bin_box(Box, undefined, undefined, undefined, []).
+
+identify_bin_box([], ask, Id, Name, Box)
+  when is_binary(Id), is_binary(Name) ->
+    {ask, Id, Name, Box}.
 
 -spec decode_box(amp:amp_list(), amp:amp_bin_box()) -> amp:amp_box().
 decode_box(Protocol, Box) ->
