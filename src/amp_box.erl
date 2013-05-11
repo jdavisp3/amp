@@ -34,7 +34,7 @@
 -endif.
 
 -record(decoder, {
-          box = [] :: amp:amp_box(),
+          box = [] :: amp:amp_bin_box(),
           rest = <<>> :: binary()
          }).
 
