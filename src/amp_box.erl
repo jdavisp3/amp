@@ -121,8 +121,9 @@ decode_bin_box(#decoder{rest=Old}=Decoder, New) ->
 identify_bin_box(Box) ->
     identify_bin_box(Box, undefined, undefined, undefined, []).
 
-identify_bin_box([], ask, Id, Name, Box)
-  when is_binary(Id), is_binary(Name) ->
+identify_bin_box([], ask, _, undefined, _) ->
+    error(illegal_box);
+identify_bin_box([], ask, Id, Name, Box) ->
     {ask, Id, Name, Box};
 identify_bin_box([], answer, Id, undefined, Box)
   when is_binary(Id) ->
