@@ -131,7 +131,9 @@ identify_bin_box([], error, Id, undefined, Box)
   when is_binary(Id) ->
     {error, Id, Box};
 identify_bin_box([{?AMP_KEY_ASK, Id}|Rest], undefined, undefined, Name, Box) ->
-    identify_bin_box(Rest, ask, Id, Name, Box).
+    identify_bin_box(Rest, ask, Id, Name, Box);
+identify_bin_box([{?AMP_KEY_ASK, _}|_], _, _, _, _) ->
+    error(illegal_box).
 
 
 -spec decode_box(amp:amp_list(), amp:amp_bin_box()) -> amp:amp_box().
