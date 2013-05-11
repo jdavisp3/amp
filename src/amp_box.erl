@@ -596,7 +596,7 @@ decode_box_test_() ->
      ?_assertError({unexpected_key, <<"a">>},
                    decode_box([], [{<<"a">>, <<"123">>}])),
      ?_assertMatch([{<<"a">>, 123},
-                    {<<"b">>, 456]],
+                    {<<"b">>, 456}],
                    decode_box([{<<"a">>, integer, []}, {<<"b">>, integer, []}],
                               [{<<"b">>, <<"456">>}, {<<"a">>, <<"123">>}]))
     ].
