@@ -275,19 +275,6 @@ ensure_decimal(String) ->
     end.
 
 
-% @private
-% @doc Return a box type atom given the binary box.
--spec box_type(amp:amp_bin_box()) -> ask | answer | error.
-box_type([{?AMP_KEY_ASK, _}|_]) ->
-    ask;
-box_type([{?AMP_KEY_ANSWER, _}|_]) ->
-    answer;
-box_type([{?AMP_KEY_ERROR, _}|_]) ->
-    error;
-box_type([_|Box]) ->
-    box_type(Box).
-
-
 % Tests
 
 -ifdef(TEST).
