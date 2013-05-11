@@ -25,8 +25,8 @@
 
 %% API
 -export([encode_ask/3, encode_answer/3, encode_error/4,
-         new_decoder/0, decode_bin_box/2, identify_bin_box/1,
-         decode_box/2]).
+         new_decoder/0, decode_bin_box/2,
+         identify_bin_box/1, decode_box/2]).
 
 -export_type([decoder/0]).
 
