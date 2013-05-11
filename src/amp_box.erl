@@ -62,7 +62,6 @@
 %% iodata encoding of the Amp Box that would implement the call.
 -spec encode_ask(amp_command:amp_command(), binary(), amp:amp_box()) -> iodata().
 encode_ask(Command, Id, Box) ->
-    [_ | _] = Box, % no empty boxes
     encode_box([{?AMP_KEY_ASK, string, []},
                 {?AMP_KEY_COMMAND, string, []}
                 | amp_command:arguments(Command)],
