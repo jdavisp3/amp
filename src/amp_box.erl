@@ -308,7 +308,7 @@ encode_ask_test() ->
                         0, 1, "a", 0, 1, "A", 0, 0>>),
     ?assertMatch({[{<<"_ask">>,<<"1">>},
                    {<<"_command">>,<<"n">>},
-                   {<<"a">>,<<"A">>}], Decoder},
+                   {<<"a">>,<<"A">>}], new_decoder()},
                  decode_bin_box(new_decoder(), Bin)).
 
 encode_answer_test() ->
@@ -318,7 +318,7 @@ encode_answer_test() ->
     ?assertMatch(Bin, <<0, 7, "_answer", 0, 1, "1",
                         0, 1, "b", 0, 1, "B", 0, 0>>),
     ?assertMatch({[{<<"_answer">>, <<"1">>},
-                   {<<"b">>, <<"B">>}], Decodeer},
+                   {<<"b">>, <<"B">>}], new_decoder()},
                  decode_bin_box(new_decoder(), Bin)).
 
 encode_error_test() ->
@@ -331,7 +331,7 @@ encode_error_test() ->
                          0, 18, "_error_description", 0, 2, "AA", 0, 0>>),
     ?assertMatch({[{<<"_error">>, <<"1">>},
                    {<<"_error_code">>, <<"A">>},
-                   {<<"_error_description">>, <<"AA">>}], Decoder},
+                   {<<"_error_description">>, <<"AA">>}], new_decoder()},
                  decode_bin_box(new_decoder(), Bin1)),
 
     Bin2 = iolist_to_binary(encode_error(Cmd, "2", <<"B">>, <<"BB">>)),
