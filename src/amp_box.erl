@@ -517,4 +517,9 @@ decode_15_test() ->
                     {<<"name">>, <<"nimbo">>}], Decoder}, <<>>},
                  test_one_by_one(Decoder, Input)).
 
+identify_bin_box_test_() ->
+    [
+     ?_assertError(_, identify_bin_box([]))
+    ].
+
 -endif.
