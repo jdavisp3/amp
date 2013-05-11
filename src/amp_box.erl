@@ -577,4 +577,9 @@ identify_bin_box_test_() ->
                                         {<<"_command">>, <<"c">>}]))
     ].
 
+decode_box_test_() ->
+    [
+     ?_assertMatch([], decode_box([], []))
+    ].
+
 -endif.
