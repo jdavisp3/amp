@@ -151,9 +151,18 @@ identify_bin_box([KVP|Rest], Type, Id, Name, Box) ->
     identify_bin_box(Rest, Type, Id, Name, [KVP|Box]).
 
 
+% @doc Decode a binary box into a box where the values have
+% been decoded into appropriate erlang terms
 -spec decode_box(amp:amp_list(), amp:amp_bin_box()) -> amp:amp_box().
-decode_box(Protocol, Box) ->
-    ok.
+decode_box(Protocol, BinBox) ->
+    decode_box(Protocol, BinBox, []).
+
+
+% @private
+-spec decode_box(amp:amp_list(), amp:amp_bin_box(), amp:amp_box()) -> amp:amp_box().
+decode_box([], [], Box) ->
+    Box.
+
 
 % @private
 % @doc Encode the box according to the given protocol into iodata.
