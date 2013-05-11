@@ -25,7 +25,8 @@
 
 %% API
 -export([encode_ask/3, encode_answer/3, encode_error/4,
-         new_decoder/0, decode_bin_box/2]).
+         new_decoder/0, decode_bin_box/2, identify_bin_box/1,
+         decode_box/2]).
 
 -export_type([decoder/0]).
 
@@ -114,6 +115,14 @@ decode_bin_box(#decoder{rest=Old}=Decoder, New) ->
             {lists:reverse(Box), #decoder{rest=Rest}}
     end.
 
+-spec identify_bin_box(amp:amp_bin_box()) ->
+                              {ask, amp:amp_name(), Id::binary(), amp:amp_bin_box()}.
+identify_bin_box(Box) ->
+    ok.
+
+-spec decode_box(amp:amp_list(), amp:amp_bin_box()) -> amp:amp_box().
+decode_box(Protocol, Box) ->
+    ok.
 
 % @private
 % @doc Encode the box according to the given protocol into iodata.
