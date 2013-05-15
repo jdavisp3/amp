@@ -210,6 +210,14 @@ pre_loop(CallbackOpts, {M, F, A}) ->
 process_data(Bin, State) ->
     case amp_box:decode_bin_box(State#state.decoder, Bin) of
         {not_done, Decoder} ->
-            State#state{decoder=Decoder}
+            State#state{decoder=Decoder};
+        {BinBox, Decoder} ->
+            State0 = State#state{decoder=Decoder},
+            State1 = process_bin_box(BinBox, State0),
+            process_data(<<>>, State1)
     end.
 
+% @private
+-spec process_bin_box(amp_box:amp_bin_box(), #state{}) -> #state{}.
+process_bin_box(BinBox, State) ->
+    ok.
