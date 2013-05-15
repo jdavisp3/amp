@@ -48,7 +48,8 @@
                 answers :: dict(), % external id -> answer (pending answers we
                                    % have been asked),
                 max_pending :: non_neg_integer(), % max # of pending q's & a's
-                decode_state = {header, <<>>} :: decode_state()
+                decoder :: amp_box:decoder(),
+                transport_messages :: tuple()
                }).
 
 
@@ -69,7 +70,9 @@ init([Ref, Socket, Transport, Opts]) ->
     State0 = #state{socket=Socket, transport=Transport,
                     handler=proplists:get_value(handler, Opts),
                     questions=dict:new(), answers=dict:new(),
-                    max_pending=proplists:get_value(max_pending, Opts, ?MAX_PENDING)},
+                    max_pending=proplists:get_value(max_pending, Opts, ?MAX_PENDING),
+                    decoder=amp_box:new_decoder(),
+                    transport_messages=Transport:messages()},
     {State1, CallbackOpts} = init_handler(State0, Opts),
     State2 = update_timeout(State1, CallbackOpts),
     pre_loop(CallbackOpts, {gen_server, enter_loop, [?MODULE, [], State2]}).
