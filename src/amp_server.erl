@@ -206,8 +206,10 @@ pre_loop(CallbackOpts, {M, F, A}) ->
     end.
 
 % @private
--spec process_data(dsecode_state(), binary()) ->
-                          {not_done, decode_state()}
-                              | {amp:amp_box(), decode_state()}.
-process_data(DecodeState, Bin) ->
-    ok.
+-spec process_data(binary(), #state{}) -> #state{}.
+process_data(Bin, State) ->
+    case amp_box:decode_bin_box(State#state.decoder, Bin) of
+        {not_done, Decoder} ->
+            State#state{decoder=Decoder}
+    end.
+
