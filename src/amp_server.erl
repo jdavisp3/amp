@@ -122,6 +122,9 @@ handle_cast(_, State) ->
 % @private
 handle_info({timeout, Ref, _}, #state{timeout_ref=Ref}=State) ->
     {stop, timeout, State#state{timeout=infinity, timeout_ref=undefined}};
+handle_info({Ok, Socket, Data}, #state{socket=Socket,
+                                       transport_messages={Ok, _, _}}=State) ->
+    {noreply, process_data(Data, State)};
 handle_info(_Info, State) ->
     {noreply, State}.
 
@@ -203,7 +206,7 @@ pre_loop(CallbackOpts, {M, F, A}) ->
     end.
 
 % @private
--spec process_data(decode_state(), binary()) ->
+-spec process_data(dsecode_state(), binary()) ->
                           {not_done, decode_state()}
                               | {amp:amp_box(), decode_state()}.
 process_data(DecodeState, Bin) ->
