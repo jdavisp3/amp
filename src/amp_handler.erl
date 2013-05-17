@@ -33,8 +33,8 @@
 -callback handle_ask(Name::binary(), Args::list(), from(), state()) ->
           {ok, state()}
         | {ok, state(), callback_opts()}
-        | {answer, Response::list(), state()}
-        | {answer, Response::list(), state(), callback_opts()}
+        | {answer, Response::amp:amp_box(), state()}
+        | {answer, Response::amp:amp_box(), state(), callback_opts()}
         | {error, Error::amp:amp_name(), Code::amp:amp_name(),
            Description::amp:amp_name(), state()}
         | {error, Error::amp:amp_name(), Code::amp:amp_name(),

@@ -221,7 +221,8 @@ identify(BinBox, State) ->
     process(amp_box:identify_bin_box(BinBox), State).
 
 % @private
-process({ask, Id, Name, BinBox}, #state{handler=Handler}=State) ->
+process({ask, Id, Name, BinBox},
+        #state{handler=Handler, transport=Transport}=State) ->
     Command = lookup_command(State#state.commands, Name),
     Args = amp_box:decode_box(amp_command:response(Command), BinBox),
     Ref = make_ref(),
@@ -231,7 +232,11 @@ process({ask, Id, Name, BinBox}, #state{handler=Handler}=State) ->
             {State#state{answers=Answers, handler_state=HandlerState}, []};
         {ok, HandlerState, CallbackOpts} ->
             Answers = dict:store(Ref, {Id, Command}, State#state.answers),
-            {State#state{answers=Answers, handler_state=HandlerState}, CallbackOpts}
+            {State#state{answers=Answers, handler_state=HandlerState}, CallbackOpts};
+        {answer, Response, HandlerState} ->
+            IOData = amp_box:encode_answer(Command, Id, Response),
+            Transport:send(State#state.socket, IOData),
+            {State#state{handler_state=HandlerState}, []}
     catch Class:Reason ->
             error_logger:error_msg(
               "** Amp handler ~p terminating in ~p/~p~n"
