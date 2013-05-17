@@ -200,7 +200,7 @@ update_timeout(State, [_, CallbackOpts]) ->
 pre_loop(CallbackOpts, {M, F, A}) ->
     case proplists:get_bool(hibernate, CallbackOpts) of
         true ->
-                proc_lib:hibernate(M, F, A);
+            proc_lib:hibernate(M, F, A);
         false ->
             erlang:apply(M, F, A)
     end.
