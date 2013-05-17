@@ -225,5 +225,5 @@ identify(BinBox, State) ->
 % @private
 process({ask, Id, Name, BinBox}, State) ->
     Command = lookup_command(State#state.commands, Name),
-    Box = amp_box:decode_box(amp_command:response(Command), BinBox),
+    Args = amp_box:decode_box(amp_command:response(Command), BinBox),
     ok.

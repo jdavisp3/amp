@@ -34,6 +34,8 @@
           {ok, state()}
         | {ok, state(), callback_opts()}
         | {answer, Response::list(), state()}
+        | {error, Error::amp:amp_name(), Code::amp:amp_name(),
+           Description::amp:amp_name(), state()}
         | {shutdown, state()}.
 
 -callback handle_info(Msg::any(), state()) ->
