@@ -41,7 +41,7 @@
                 timeout_ref = undefined :: undefined | reference(),
                 commands = [] :: [amp:amp_command()],
                 questions :: dict(), % id -> {From, Command} (pending questions we asked)
-                answers :: dict(), % external id -> answer (pending answers we
+                answers :: dict(), % reference -> {Id, Command} (pending answers we
                                    % have been asked),
                 max_pending :: non_neg_integer(), % max # of pending q's & a's
                 decoder :: amp_box:decoder(),
@@ -222,9 +222,11 @@ identify(BinBox, State) ->
 process({ask, Id, Name, BinBox}, #state{handler=Handler}=State) ->
     Command = lookup_command(State#state.commands, Name),
     Args = amp_box:decode_box(amp_command:response(Command), BinBox),
-    try Handler:handle_ask(Name, Args, Id, State#state.handler_state) of
+    Ref = make_ref(),
+    try Handler:handle_ask(Name, Args, Ref, State#state.handler_state) of
         {ok, HandlerState} ->
-            ok
+            Answers = dict:store(Ref, {Id, Command}, State#state.answers),
+            State#state{answers=Answers, handler_state=HandlerState}
     catch Class:Reason ->
             error_logger:error_msg(
               "** Amp handler ~p terminating in ~p/~p~n"
