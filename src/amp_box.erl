@@ -117,38 +117,38 @@ decode_bin_box(#decoder{rest=Old}=Decoder, New) ->
 -spec identify_bin_box(amp:amp_bin_box()) ->
                               {ask, Id::binary(), Name::binary(), amp:amp_bin_box()}
                                   | {answer, Id::binary(), amp:amp_bin_box()}
-                                  | {error, Id::binary(), amp:amp_bin_box()}.
+                                  | {error, Id::binary(), amp:amp_box()}.
 identify_bin_box(Box) ->
     identify_bin_box(Box, undefined, undefined, undefined, []).
 
 identify_bin_box([], ask, _, undefined, _) ->
     error(illegal_box);
-identify_bin_box([], ask, Id, Name, Box) ->
-    {ask, Id, Name, Box};
-identify_bin_box([], answer, Id, undefined, Box) ->
-    {answer, Id, Box};
-identify_bin_box([], error, Id, undefined, Box) ->
-    {error, Id, Box};
-identify_bin_box([{?AMP_KEY_ASK, Id}|Rest], undefined, undefined, Name, Box) ->
-    identify_bin_box(Rest, ask, Id, Name, Box);
+identify_bin_box([], ask, Id, Name, BinBox) ->
+    {ask, Id, Name, BinBox};
+identify_bin_box([], answer, Id, undefined, BinBox) ->
+    {answer, Id, BinBox};
+identify_bin_box([], error, Id, undefined, BinBox) ->
+    {error, Id, decode_box([], BinBox)};
+identify_bin_box([{?AMP_KEY_ASK, Id}|Rest], undefined, undefined, Name, BinBox) ->
+    identify_bin_box(Rest, ask, Id, Name, BinBox);
 identify_bin_box([{?AMP_KEY_ASK, _}|_], _, _, _, _) ->
     error(illegal_box);
-identify_bin_box([{?AMP_KEY_ANSWER, Id}|Rest], undefined, undefined, undefined, Box) ->
-    identify_bin_box(Rest, answer, Id, undefined, Box);
+identify_bin_box([{?AMP_KEY_ANSWER, Id}|Rest], undefined, undefined, undefined, BinBox) ->
+    identify_bin_box(Rest, answer, Id, undefined, BinBox);
 identify_bin_box([{?AMP_KEY_ANSWER, _}|_], _, _, _, _) ->
     error(illegal_box);
-identify_bin_box([{?AMP_KEY_ERROR, Id}|Rest], undefined, undefined, undefined, Box) ->
-    identify_bin_box(Rest, error, Id, undefined, Box);
+identify_bin_box([{?AMP_KEY_ERROR, Id}|Rest], undefined, undefined, undefined, BinBox) ->
+    identify_bin_box(Rest, error, Id, undefined, BinBox);
 identify_bin_box([{?AMP_KEY_ERROR, _}|_], _, _, _, _) ->
     error(illegal_box);
-identify_bin_box([{?AMP_KEY_COMMAND, Name}|Rest], undefined, undefined, undefined, Box) ->
-    identify_bin_box(Rest, undefined, undefined, Name, Box);
-identify_bin_box([{?AMP_KEY_COMMAND, Name}|Rest], ask, Id, undefined, Box) ->
-    identify_bin_box(Rest, ask, Id, Name, Box);
+identify_bin_box([{?AMP_KEY_COMMAND, Name}|Rest], undefined, undefined, undefined, BinBox) ->
+    identify_bin_box(Rest, undefined, undefined, Name, BinBox);
+identify_bin_box([{?AMP_KEY_COMMAND, Name}|Rest], ask, Id, undefined, BinBox) ->
+    identify_bin_box(Rest, ask, Id, Name, BinBox);
 identify_bin_box([{?AMP_KEY_COMMAND, _}|_], _, _, _, _) ->
     error(illegal_box);
-identify_bin_box([KVP|Rest], Type, Id, Name, Box) ->
-    identify_bin_box(Rest, Type, Id, Name, [KVP|Box]).
+identify_bin_box([KVP|Rest], Type, Id, Name, BinBox) ->
+    identify_bin_box(Rest, Type, Id, Name, [KVP|BinBox]).
 
 
 % @doc Decode a binary box into a box where the values have
