@@ -228,7 +228,10 @@ process({ask, Id, Name, BinBox}, #state{handler=Handler}=State) ->
     try Handler:handle_ask(Name, Args, Ref, State#state.handler_state) of
         {ok, HandlerState} ->
             Answers = dict:store(Ref, {Id, Command}, State#state.answers),
-            {State#state{answers=Answers, handler_state=HandlerState}, []}
+            {State#state{answers=Answers, handler_state=HandlerState}, []};
+        {ok, HandlerState, CallbackOpts} ->
+            Answers = dict:store(Ref, {Id, Command}, State#state.answers),
+            {State#state{answers=Answers, handler_state=HandlerState}, CallbackOpts}
     catch Class:Reason ->
             error_logger:error_msg(
               "** Amp handler ~p terminating in ~p/~p~n"
