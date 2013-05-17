@@ -209,12 +209,14 @@ process_data(Bin, State) ->
             State#state{decoder=Decoder};
         {BinBox, Decoder} ->
             State0 = State#state{decoder=Decoder},
-            State1 = identify(BinBox, State0),
-            process_data(<<>>, State1)
+            {State1, CallbackOpts} = identify(BinBox, State0),
+            State2 = update_timeout(State1, CallbackOpts),
+            process_data(<<>>, State2)
     end.
 
 % @private
--spec identify(amp_box:amp_bin_box(), #state{}) -> #state{}.
+-spec identify(amp_box:amp_bin_box(), #state{})
+              -> {#state{}, amp_handler:callback_opts()}.
 identify(BinBox, State) ->
     process(amp_box:identify_bin_box(BinBox), State).
 
@@ -226,7 +228,7 @@ process({ask, Id, Name, BinBox}, #state{handler=Handler}=State) ->
     try Handler:handle_ask(Name, Args, Ref, State#state.handler_state) of
         {ok, HandlerState} ->
             Answers = dict:store(Ref, {Id, Command}, State#state.answers),
-            State#state{answers=Answers, handler_state=HandlerState}
+            {State#state{answers=Answers, handler_state=HandlerState}, []}
     catch Class:Reason ->
             error_logger:error_msg(
               "** Amp handler ~p terminating in ~p/~p~n"
