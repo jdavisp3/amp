@@ -32,10 +32,6 @@
 -type ask_response() :: {amp_answer, amp:amp_box()}
                       | {amp_error, amp:amp_name(), amp:amp_box()}.
 
--type decode_state() :: {header, binary()}
-                      | {ask_header, binary()}
-                      | {ask | answer | error, amp_box:decoder()}.
-
 -record(state, {socket,
                 transport,
                 nextid = 0 :: non_neg_integer(),
