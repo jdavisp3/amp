@@ -213,11 +213,15 @@ process_data(Bin, State) ->
             State#state{decoder=Decoder};
         {BinBox, Decoder} ->
             State0 = State#state{decoder=Decoder},
-            State1 = process_bin_box(BinBox, State0),
+            State1 = identify(BinBox, State0),
             process_data(<<>>, State1)
     end.
 
 % @private
--spec process_bin_box(amp_box:amp_bin_box(), #state{}) -> #state{}.
-process_bin_box(BinBox, State) ->
+-spec identify(amp_box:amp_bin_box(), #state{}) -> #state{}.
+identify(BinBox, State) ->
+    process(amp_box:identify_bin_box(BinBox), State).
+
+% @private
+process({ask, Id, Name, BinBox}, State) ->
     ok.
