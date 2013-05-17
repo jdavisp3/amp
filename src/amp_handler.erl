@@ -39,6 +39,9 @@
 -callback handle_info(Msg::any(), state()) ->
           {ok, state()}
         | {ok, state(), callback_opts()}
+        | {answer, from(), Response::amp:amp_box(), state()}
+        | {error, from(), Error::amp:amp_name(), Code::amp:amp_name(),
+           Description::amp:amp_name(), state()}
         | {shutdown, state()}.
 
 -callback terminate(terminate_reason(), state()) -> ok.
