@@ -236,7 +236,11 @@ process({ask, Id, Name, BinBox},
         {answer, Response, HandlerState} ->
             IOData = amp_box:encode_answer(Command, Id, Response),
             Transport:send(State#state.socket, IOData),
-            {State#state{handler_state=HandlerState}, []}
+            {State#state{handler_state=HandlerState}, []};
+        {answer, Response, HandlerState, CallbackOpts} ->
+            IOData = amp_box:encode_answer(Command, Id, Response),
+            Transport:send(State#state.socket, IOData),
+            {State#state{handler_state=HandlerState}, CallbackOpts}
     catch Class:Reason ->
             error_logger:error_msg(
               "** Amp handler ~p terminating in ~p/~p~n"
