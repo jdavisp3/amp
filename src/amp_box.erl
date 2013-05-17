@@ -128,7 +128,7 @@ identify_bin_box([], ask, Id, Name, BinBox) ->
 identify_bin_box([], answer, Id, undefined, BinBox) ->
     {answer, Id, BinBox};
 identify_bin_box([], error, Id, undefined, BinBox) ->
-    {error, Id, decode_box([], BinBox)};
+    {error, Id, decode_box(?AMP_ERROR_PROTOCOL, BinBox)};
 identify_bin_box([{?AMP_KEY_ASK, Id}|Rest], undefined, undefined, Name, BinBox) ->
     identify_bin_box(Rest, ask, Id, Name, BinBox);
 identify_bin_box([{?AMP_KEY_ASK, _}|_], _, _, _, _) ->
