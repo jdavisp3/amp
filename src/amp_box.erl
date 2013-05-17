@@ -54,8 +54,8 @@
 -define(AMP_MAX_VAL_LEN, 65535).
 
 % The protocol for error responses.
--define(AMP_ERROR_PROTOCOL, [{?AMP_KEY_ERROR_CODE, string, []},
-                             {?AMP_KEY_ERROR_DESCRIPTION, string, []}]).
+-define(AMP_ERROR_PROTOCOL, [{?AMP_KEY_ERROR_CODE, binary, []},
+                             {?AMP_KEY_ERROR_DESCRIPTION, binary, []}]).
 
 
 %% @doc Given an amp_command record, a message id, and a box, return an
@@ -556,8 +556,11 @@ identify_bin_box_test_() ->
                                      {<<"_command">>, <<"b">>}])),
      ?_assertMatch({answer, <<"a">>, []},
                    identify_bin_box([{<<"_answer">>, <<"a">>}])),
-     ?_assertMatch({error, <<"a">>, []},
-                   identify_bin_box([{<<"_error">>, <<"a">>}])),
+     ?_assertMatch({error, <<"a">>, [{<<"_error_code">>, <<"code">>},
+                                     {<<"_error_description">>, <<"desc">>}]},
+                   identify_bin_box([{<<"_error">>, <<"a">>},
+                                     {<<"_error_code">>, <<"code">>},
+                                     {<<"_error_description">>, <<"desc">>}])),
      ?_assertError(_, identify_bin_box([])),
      ?_assertError(_, identify_bin_box([{<<"a">>, <<"b">>}])),
      ?_assertError(_, identify_bin_box([{<<"_ask">>, <<"a">>}])),
