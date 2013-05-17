@@ -51,8 +51,8 @@
 
 -record(amp_command, {
           name :: amp:amp_name(),
-          arguments = [] :: [amp:amp_type()],
-          response = [] :: [amp:amp_type()],
+          arguments = [] :: amp:amp_list(),
+          response = [] :: amp:amp_list(),
           errors = [] :: [amp:amp_error()],
           options = [requires_answer] :: [amp:amp_command_option()]
          }).

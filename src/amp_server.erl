@@ -224,4 +224,5 @@ identify(BinBox, State) ->
 
 % @private
 process({ask, Id, Name, BinBox}, State) ->
+    Command = lookup_command(State#state.commands, Name),
     ok.
