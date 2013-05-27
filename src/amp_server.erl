@@ -181,7 +181,8 @@ check_max_pending(Dict, #state{max_pending=Max}) ->
 % @private
 update_timeout(State, CallbackOpts) ->
     cancel_timeout(State),
-    set_timeout(proplists:get_value(timeout, CallbackOpts), State).
+    Timeout = proplists:get_value(timeout, CallbackOpts),
+    set_timeout(Timeout, State).
 
 
 cancel_timeout(#state{timeout_ref=undefined}) ->
