@@ -120,7 +120,13 @@ handle_info({timeout, Ref, _}, #state{timeout_ref=Ref}=State) ->
     handle_info(timeout, State#state{timeout=infinity, timeout_ref=undefined});
 handle_info({Ok, Socket, Data}, #state{socket=Socket,
                                        transport_messages={Ok, _, _}}=State) ->
-    {noreply, process_data(Data, State)};
+    try process_data(Data, State) of
+        State1 ->
+            {noreply, State1}
+    catch
+        throw:{shutdown, State1} ->
+            {shutdown, State1}
+    end;
 handle_info(_Info, State) ->
     {noreply, State}.
 
@@ -239,7 +245,7 @@ process({ask, Id, Name, BinBox}, #state{handler=Handler}=State) ->
             send_reply(Reply, Command, Id, State),
             {State#state{handler_state=HandlerState}, CallbackOpts};
         {shutdown, HandlerState} ->
-            {State#state{handler_state=HandlerState}, [shutdown]}
+            throw({shutdown, {State#state{handler_state=HandlerState}}})
     catch Class:Reason ->
             error_logger:error_msg(
               "** Amp handler ~p terminating in ~p/~p~n"
