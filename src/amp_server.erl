@@ -221,8 +221,7 @@ identify(BinBox, State) ->
     process(amp_box:identify_bin_box(BinBox), State).
 
 % @private
-process({ask, Id, Name, BinBox},
-        #state{handler=Handler, transport=Transport}=State) ->
+process({ask, Id, Name, BinBox}, #state{handler=Handler}=State) ->
     Command = lookup_command(State#state.commands, Name),
     Args = amp_box:decode_box(amp_command:response(Command), BinBox),
     Ref = make_ref(),
@@ -233,13 +232,11 @@ process({ask, Id, Name, BinBox},
         {ok, HandlerState, CallbackOpts} ->
             Answers = dict:store(Ref, {Id, Command}, State#state.answers),
             {State#state{answers=Answers, handler_state=HandlerState}, CallbackOpts};
-        {answer, Response, HandlerState} ->
-            IOData = amp_box:encode_answer(Command, Id, Response),
-            Transport:send(State#state.socket, IOData),
+        {reply, Reply, HandlerState} ->
+            send_reply(Reply, Command, Id, State),
             {State#state{handler_state=HandlerState}, []};
-        {answer, Response, HandlerState, CallbackOpts} ->
-            IOData = amp_box:encode_answer(Command, Id, Response),
-            Transport:send(State#state.socket, IOData),
+        {reply, Reply, HandlerState, CallbackOpts} ->
+            send_reply(Reply, Command, Id, State),
             {State#state{handler_state=HandlerState}, CallbackOpts}
     catch Class:Reason ->
             error_logger:error_msg(
@@ -251,3 +248,9 @@ process({ask, Id, Name, BinBox},
                State#state.handler_state, erlang:get_stacktrace()]),
             error(Reason)
     end.
+
+
+send_reply({answer, Response}, Command, Id,
+           #state{transport=Transport} = State) ->
+    IOData = amp_box:encode_answer(Command, Id, Response),
+    Transport:send(State#state.socket, IOData).
