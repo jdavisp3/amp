@@ -39,6 +39,7 @@
                 handler_state :: any(),
                 timeout = infinity :: timeout(),
                 timeout_ref = undefined :: undefined | reference(),
+                hibernate = false :: boolean(),
                 commands = [] :: [amp:amp_command()],
                 questions :: dict(), % id -> {From, Command} (pending questions we asked)
                 answers :: dict(), % reference -> {Id, Command} (pending answers we
