@@ -185,6 +185,9 @@ cancel_timeout(#state{timeout_ref=undefined}=State) ->
     State;
 cancel_timeout(#state{timeout_ref=TRef}=State) ->
     erlang:cancel_timer(TRef),
+    receive timeout -> ok
+    after 0 -> ok
+    end,
     State#state{timeout=infinity, timeout_ref=undefined}.
 
 set_timeout(Timeout, State) ->
