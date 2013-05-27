@@ -200,6 +200,12 @@ set_timeout(Timeout, State) ->
 
 
 % @private
+update_hibernate(State, CallbackOpts) ->
+    Hibernate = proplists:get_bool(hibernate, CallbackOpts),
+    State#state{hibernate=Hibernate}.
+
+
+% @private
 pre_loop(CallbackOpts, {M, F, A}) ->
     case proplists:get_bool(hibernate, CallbackOpts) of
         true ->
@@ -218,7 +224,8 @@ process_data(Bin, State) ->
             State0 = State#state{decoder=Decoder},
             {State1, CallbackOpts} = identify(BinBox, State0),
             State2 = update_timeout(State1, CallbackOpts),
-            process_data(<<>>, State2)
+            State3 = update_hibernate(State2, CallbackOpts),
+            process_data(<<>>, State3)
     end.
 
 % @private
