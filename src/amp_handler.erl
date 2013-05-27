@@ -17,6 +17,9 @@
 -type opts() :: any().
 -type state() :: any().
 -type from() :: any().
+-type reply() :: {answer, amp:amp_box()}
+               | {error, Error::amp:amp_name(), Code::amp:amp_name(),
+                  Description::amp:amp_name()}.
 -type callback_opts() :: [hibernate | timeout()].
 -type terminate_reason() :: {normal, shutdown}
                           | {normal, timeout}
@@ -33,12 +36,8 @@
 -callback handle_ask(Name::binary(), Args::list(), from(), state()) ->
           {ok, state()}
         | {ok, state(), callback_opts()}
-        | {answer, Response::amp:amp_box(), state()}
-        | {answer, Response::amp:amp_box(), state(), callback_opts()}
-        | {error, Error::amp:amp_name(), Code::amp:amp_name(),
-           Description::amp:amp_name(), state()}
-        | {error, Error::amp:amp_name(), Code::amp:amp_name(),
-           Description::amp:amp_name(), state(), callback_opts()}
+        | {reply, reply(), state()}
+        | {reply, reply(), state(), callback_opts()}
         | {shutdown, state()}.
 
 -callback handle_info(Msg::any(), state()) ->
