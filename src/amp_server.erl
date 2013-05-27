@@ -237,7 +237,9 @@ process({ask, Id, Name, BinBox}, #state{handler=Handler}=State) ->
             {State#state{handler_state=HandlerState}, []};
         {reply, Reply, HandlerState, CallbackOpts} ->
             send_reply(Reply, Command, Id, State),
-            {State#state{handler_state=HandlerState}, CallbackOpts}
+            {State#state{handler_state=HandlerState}, CallbackOpts};
+        {shutdown, HandlerState} ->
+            {State#state{handler_state=HandlerState}, [shutdown]}
     catch Class:Reason ->
             error_logger:error_msg(
               "** Amp handler ~p terminating in ~p/~p~n"
