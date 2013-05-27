@@ -37,7 +37,6 @@
                 nextid = 0 :: non_neg_integer(),
                 handler :: atom(),
                 handler_state :: any(),
-                timeout = infinity :: timeout(),
                 timeout_ref = undefined :: undefined | reference(),
                 hibernate = false :: boolean(),
                 commands = [] :: [amp:amp_command()],
@@ -118,7 +117,7 @@ handle_cast(_, State) ->
 
 % @private
 handle_info({timeout, Ref, _}, #state{timeout_ref=Ref}=State) ->
-    handle_info(timeout, State#state{timeout=infinity, timeout_ref=undefined});
+    handle_info(timeout, State#state{timeout_ref=undefined});
 handle_info({Ok, Socket, Data}, #state{socket=Socket,
                                        transport_messages={Ok, _, _}}=State) ->
     try process_data(Data, State) of
@@ -194,12 +193,12 @@ cancel_timeout(#state{timeout_ref=TRef}) ->
     end.
 
 set_timeout(undefined, State) ->
-    State#state{timeout=infinity, timeout_ref=undefined};
+    State#state{timeout_ref=undefined};
 set_timeout(infinity, State) ->
-    State#state{timeout=infinity, timeout_ref=undefined};
+    State#state{timeout_ref=undefined};
 set_timeout(Timeout, State) ->
     TRef = erlang:start_timer(Timeout, self(), ?MODULE),
-    State#state{timeout=Timeout, timeout_ref=TRef}.
+    State#state{timeout_ref=TRef}.
 
 
 % @private
