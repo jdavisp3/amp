@@ -172,25 +172,25 @@ check_max_pending(Dict, #state{max_pending=Max}) ->
     end.
 
 % @private
-update_timeout(State, []) ->
-    State;
-update_timeout(#state{timeout_ref=PrevRef} = State,
-               [{timeout, Timeout} | CallbackOpts]) ->
-    case PrevRef of
+update_timeout(State0, CallbackOpts) ->
+    State1 = cancel_timeout(State0),
+    case proplists:get_value(timeout, CallbackOpts) of
         undefined ->
-            ignore;
-        PrevRef ->
-            erlang:cancel_timer(PrevRef)
-    end,
-    Ref = case Timeout of
-              infinity ->
-                  undefined;
-              Timeout ->
-                  erlang:start_timer(Timeout, self(), ?MODULE)
-          end,
-    update_timeout(State#state{timeout=Timeout, timeout_ref=Ref}, CallbackOpts);
-update_timeout(State, [_, CallbackOpts]) ->
-    update_timeout(State, CallbackOpts).
+            State1;
+        Timeout ->
+            set_timeout(Timeout, State1)
+    end.
+
+cancel_timeout(#state{timeout_ref=undefined}=State) ->
+    State;
+cancel_timeout(#state{timeout_ref=TRef}=State) ->
+    erlang:cancel_timer(TRef),
+    State#state{timeout=infinity, timeout_ref=undefined}.
+
+set_timeout(Timeout, State) ->
+    TRef = erlang:start_timer(Timeout, self(), ?MODULE),
+    State#state{timeout=Timeout, timeout_ref=TRef}.
+
 
 % @private
 pre_loop(CallbackOpts, {M, F, A}) ->
