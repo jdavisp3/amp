@@ -253,4 +253,9 @@ process({ask, Id, Name, BinBox}, #state{handler=Handler}=State) ->
 send_reply({answer, Response}, Command, Id,
            #state{transport=Transport} = State) ->
     IOData = amp_box:encode_answer(Command, Id, Response),
+    Transport:send(State#state.socket, IOData);
+
+send_reply({error, Code, Description}, Command, Id,
+           #state{transport=Transport} = State) ->
+    IOData = amp_box:encode_error(Command, Id, Code, Description),
     Transport:send(State#state.socket, IOData).

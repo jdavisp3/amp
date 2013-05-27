@@ -18,7 +18,7 @@
 -type state() :: any().
 -type from() :: any().
 -type reply() :: {answer, amp:amp_box()}
-               | {error, Error::amp:amp_name(), Code::amp:amp_name(),
+               | {error, Code::amp:amp_name(),
                   Description::amp:amp_name()}.
 -type callback_opts() :: [hibernate | timeout()].
 -type terminate_reason() :: {normal, shutdown}
