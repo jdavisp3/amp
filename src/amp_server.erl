@@ -172,24 +172,21 @@ check_max_pending(Dict, #state{max_pending=Max}) ->
     end.
 
 % @private
-update_timeout(State0, CallbackOpts) ->
-    State1 = cancel_timeout(State0),
-    case proplists:get_value(timeout, CallbackOpts) of
-        undefined ->
-            State1;
-        Timeout ->
-            set_timeout(Timeout, State1)
-    end.
+update_timeout(State, CallbackOpts) ->
+    cancel_timeout(State),
+    set_timeout(proplists:get_value(timeout, CallbackOpts), State).
 
-cancel_timeout(#state{timeout_ref=undefined}=State) ->
-    State;
-cancel_timeout(#state{timeout_ref=TRef}=State) ->
+
+cancel_timeout(#state{timeout_ref=undefined}) ->
+    ok;
+cancel_timeout(#state{timeout_ref=TRef}) ->
     erlang:cancel_timer(TRef),
     receive timeout -> ok
     after 0 -> ok
-    end,
-    State#state{timeout=infinity, timeout_ref=undefined}.
+    end.
 
+set_timeout(undefined, State) ->
+    State#state{timeout=infinity, timeout_ref=undefined};
 set_timeout(Timeout, State) ->
     TRef = erlang:start_timer(Timeout, self(), ?MODULE),
     State#state{timeout=Timeout, timeout_ref=TRef}.
