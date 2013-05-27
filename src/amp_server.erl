@@ -194,6 +194,8 @@ cancel_timeout(#state{timeout_ref=TRef}) ->
 
 set_timeout(undefined, State) ->
     State#state{timeout=infinity, timeout_ref=undefined};
+set_timeout(infinity, State) ->
+    State#state{timeout=infinity, timeout_ref=undefined};
 set_timeout(Timeout, State) ->
     TRef = erlang:start_timer(Timeout, self(), ?MODULE),
     State#state{timeout=Timeout, timeout_ref=TRef}.
