@@ -117,7 +117,7 @@ handle_cast(_, State) ->
 
 % @private
 handle_info({timeout, Ref, _}, #state{timeout_ref=Ref}=State) ->
-    {stop, timeout, State#state{timeout=infinity, timeout_ref=undefined}};
+    handle_info(timeout, State#state{timeout=infinity, timeout_ref=undefined});
 handle_info({Ok, Socket, Data}, #state{socket=Socket,
                                        transport_messages={Ok, _, _}}=State) ->
     {noreply, process_data(Data, State)};
