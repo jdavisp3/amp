@@ -121,8 +121,10 @@ handle_info({timeout, Ref, _}, #state{timeout_ref=Ref}=State) ->
 handle_info({Ok, Socket, Data}, #state{socket=Socket,
                                        transport_messages={Ok, _, _}}=State) ->
     try process_data(Data, State) of
-        State1 ->
-            {noreply, State1}
+        #state{hibernate=false} = State1 ->
+            {noreply, State1};
+        #state{hibernate=true} = State1 ->
+            {noreply, State1#state{hibernate=false}, hibernate}
     catch
         throw:{shutdown, State1} ->
             {shutdown, State1}
