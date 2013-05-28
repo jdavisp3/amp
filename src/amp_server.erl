@@ -129,8 +129,20 @@ handle_info({Ok, Socket, Data}, #state{socket=Socket,
         throw:{shutdown, State1} ->
             {shutdown, State1}
     end;
-handle_info(_Info, State) ->
-    {noreply, State}.
+handle_info(Info, #state{handler=Handler}=State) ->
+    try Handler:handle_info(Info, State#state.handler_state) of
+        {shutdown, HandlerState} ->
+            {shutdown, {State#state{handler_state=HandlerState}}}
+    catch Class:Reason ->
+            error_logger:error_msg(
+              "** Amp handler ~p terminating in ~p/~p~n"
+              "   for the reason ~p:~p~n"
+              "** State was ~p~n"
+              "** Stacktrace: ~p~n~n",
+              [Handler, init, 1, Class, Reason,
+               State#state.handler_state, erlang:get_stacktrace()]),
+            error(Reason)
+    end.
 
 % @private
 terminate(_Reason, _State) ->
