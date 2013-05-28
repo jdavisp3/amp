@@ -289,6 +289,13 @@ send_reply({error, Code, Description}, Command, Id,
     Transport:send(State#state.socket, IOData).
 
 
+send_reply_from(From, Reply, State) ->
+    {Id, Command} = dict:fetch(From, State#state.answers),
+    Answers = dict:erase(From, State#state.answers),
+    send_reply(Reply, Command, Id, State),
+    State#state{answers=Answers}.
+
+
 handler_info(Info, #state{handler=Handler}=State) ->
     try Handler:handle_info(Info, State#state.handler_state) of
         {ok, HandlerState} ->
@@ -296,10 +303,11 @@ handler_info(Info, #state{handler=Handler}=State) ->
         {ok, HandlerState, CallbackOpts} ->
             {State#state{handler_state=HandlerState}, CallbackOpts};
         {reply, From, Reply, HandlerState} ->
-            {Id, Command} = dict:fetch(From, State#state.answers),
-            Answers = dict:erase(From, State#state.answers),
-            send_reply(Reply, Command, Id, State),
-            {State#state{answers=Answers, handler_state=HandlerState}, []};
+            State1 = send_reply_from(From, Reply, State),
+            {State1#state{handler_state=HandlerState}, []};
+        {reply, From, Reply, HandlerState, CallbackOpts} ->
+            State1 = send_reply_from(From, Reply, State),
+            {State1#state{handler_state=HandlerState}, CallbackOpts};
         {shutdown, HandlerState} ->
             throw({shutdown, {State#state{handler_state=HandlerState}}})
     catch Class:Reason ->
