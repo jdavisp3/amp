@@ -129,23 +129,16 @@ handle_info({Ok, Socket, Data}, #state{socket=Socket,
         throw:{shutdown, State1} ->
             {shutdown, State1}
     end;
-handle_info(Info, #state{handler=Handler}=State) ->
-    try Handler:handle_info(Info, State#state.handler_state) of
-        {ok, HandlerState} ->
-            State1 = update_timeout(State, []),
-            {State1#state{handler_state=HandlerState}, []};
-        {shutdown, HandlerState} ->
-            {shutdown, {State#state{handler_state=HandlerState}}}
-    catch Class:Reason ->
-            error_logger:error_msg(
-              "** Amp handler ~p terminating in ~p/~p~n"
-              "   for the reason ~p:~p~n"
-              "** State was ~p~n"
-              "** Stacktrace: ~p~n~n",
-              [Handler, init, 1, Class, Reason,
-               State#state.handler_state, erlang:get_stacktrace()]),
-            error(Reason)
+handle_info(Info, State) ->
+    {State1, CallbackOpts} = handler_info(Info, State),
+    State2 = update_timeout(State1, CallbackOpts),
+    case proplists:get_bool(hibernate, CallbackOpts) of
+        false ->
+            {noreply, State2};
+        true ->
+            {noreply, State2#state{hibernate=false}, hibernate}
     end.
+
 
 % @private
 terminate(_Reason, _State) ->
@@ -294,3 +287,23 @@ send_reply({error, Code, Description}, Command, Id,
            #state{transport=Transport} = State) ->
     IOData = amp_box:encode_error(Command, Id, Code, Description),
     Transport:send(State#state.socket, IOData).
+
+
+handler_info(Info, #state{handler=Handler}=State) ->
+    try Handler:handle_info(Info, State#state.handler_state) of
+        {ok, HandlerState} ->
+            {State#state{handler_state=HandlerState}, []};
+        {ok, HandlerState, CallbackOpts} ->
+            {State#state{handler_state=HandlerState}, CallbackOpts};
+        {shutdown, HandlerState} ->
+            throw({shutdown, {State#state{handler_state=HandlerState}}})
+    catch Class:Reason ->
+            error_logger:error_msg(
+              "** Amp handler ~p terminating in ~p/~p~n"
+              "   for the reason ~p:~p~n"
+              "** State was ~p~n"
+              "** Stacktrace: ~p~n~n",
+              [Handler, init, 1, Class, Reason,
+               State#state.handler_state, erlang:get_stacktrace()]),
+            error(Reason)
+    end.
