@@ -1,0 +1,17 @@
+%% Reuse at will.
+
+{application, demo,
+ [
+  {description, "EventSource demo."},
+  {vsn, "1"},
+  {modules, []},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib,
+                  ranch,
+                  amp
+                 ]},
+  {mod, {demo_app, []}},
+  {env, []}
+]}.
