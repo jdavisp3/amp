@@ -14,6 +14,8 @@
 
 -module(amp).
 
+-export([listen/1]).
+
 -export_type([amp_box/0, amp_bin_box/0]).
 
 -export_type([amp_type/0, amp_list/0, amp_name/0,
@@ -35,3 +37,12 @@
 -type amp_command_option() :: 'requires_answer'.
 
 -opaque amp_command() :: record().
+
+
+listen(Opts) ->
+    Name = make_ref(),
+    Port = proplists:get_value(port, Opts, 0),
+    {ok, _} = ranch:start_listener(Name, 100,
+                                   ranch_tcp, [{port, Port}],
+                                   amp_server, []),
+    {ok, ranch:get_port(Name), Name}.
