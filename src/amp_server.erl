@@ -254,9 +254,11 @@ process_binbox({ask, Id, Name, BinBox}, #state{handler=Handler}=State) ->
     try Handler:handle_ask(Name, Args, Ref, State#state.handler_state) of
         {ok, HandlerState} ->
             Answers = dict:store(Ref, {Id, Command}, State#state.answers),
+            check_max_pending(Answers, State),
             {State#state{answers=Answers, handler_state=HandlerState}, []};
         {ok, HandlerState, CallbackOpts} ->
             Answers = dict:store(Ref, {Id, Command}, State#state.answers),
+            check_max_pending(Answers, State),
             {State#state{answers=Answers, handler_state=HandlerState}, CallbackOpts};
         {reply, Reply, HandlerState} ->
             send_reply(Reply, Command, Id, State),
