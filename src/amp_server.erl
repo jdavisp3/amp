@@ -234,20 +234,20 @@ process_data(Bin, State) ->
             State#state{decoder=Decoder};
         {BinBox, Decoder} ->
             State0 = State#state{decoder=Decoder},
-            {State1, CallbackOpts} = identify(BinBox, State0),
+            {State1, CallbackOpts} = identify_binbox(BinBox, State0),
             State2 = update_timeout(State1, CallbackOpts),
             State3 = update_hibernate(State2, CallbackOpts),
             process_data(<<>>, State3)
     end.
 
 % @private
--spec identify(amp_box:amp_bin_box(), #state{})
-              -> {#state{}, amp_handler:callback_opts()}.
-identify(BinBox, State) ->
-    process(amp_box:identify_bin_box(BinBox), State).
+-spec identify_binbox(amp_box:amp_bin_box(), #state{})
+                     -> {#state{}, amp_handler:callback_opts()}.
+identify_binbox(BinBox, State) ->
+    process_binbox(amp_box:identify_bin_box(BinBox), State).
 
 % @private
-process({ask, Id, Name, BinBox}, #state{handler=Handler}=State) ->
+process_binbox({ask, Id, Name, BinBox}, #state{handler=Handler}=State) ->
     Command = lookup_command(State#state.commands, Name),
     Args = amp_box:decode_box(amp_command:response(Command), BinBox),
     Ref = make_ref(),
