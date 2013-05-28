@@ -296,7 +296,10 @@ handler_info(Info, #state{handler=Handler}=State) ->
         {ok, HandlerState, CallbackOpts} ->
             {State#state{handler_state=HandlerState}, CallbackOpts};
         {reply, From, Reply, HandlerState} ->
-            {State#state{handler_state=HandlerState}, []};
+            {Id, Command} = dict:fetch(From, State#state.answers),
+            Answers = dict:erase(From, State#state.answers),
+            send_reply(Reply, Command, Id, State),
+            {State#state{answers=Answers, handler_state=HandlerState}, []};
         {shutdown, HandlerState} ->
             throw({shutdown, {State#state{handler_state=HandlerState}}})
     catch Class:Reason ->
