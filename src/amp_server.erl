@@ -131,6 +131,9 @@ handle_info({Ok, Socket, Data}, #state{socket=Socket,
     end;
 handle_info(Info, #state{handler=Handler}=State) ->
     try Handler:handle_info(Info, State#state.handler_state) of
+        {ok, HandlerState} ->
+            State1 = update_timeout(State, []),
+            {State1#state{handler_state=HandlerState}, []};
         {shutdown, HandlerState} ->
             {shutdown, {State#state{handler_state=HandlerState}}}
     catch Class:Reason ->

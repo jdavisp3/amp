@@ -47,4 +47,4 @@
         | {reply, from(), reply(), state(), callback_opts()}
         | {shutdown, state()}.
 
--callback terminate(terminate_reason(), state()) -> ok.
+-callback terminate(terminate_reason(), state()) -> any().
