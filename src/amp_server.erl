@@ -295,6 +295,8 @@ handler_info(Info, #state{handler=Handler}=State) ->
             {State#state{handler_state=HandlerState}, []};
         {ok, HandlerState, CallbackOpts} ->
             {State#state{handler_state=HandlerState}, CallbackOpts};
+        {reply, From, Reply, HandlerState} ->
+            {State#state{handler_state=HandlerState}, []};
         {shutdown, HandlerState} ->
             throw({shutdown, {State#state{handler_state=HandlerState}}})
     catch Class:Reason ->
