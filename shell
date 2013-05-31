@@ -1,0 +1,7 @@
+#!/bin/sh
+
+exec \
+erl -sname amp \
+    -pa deps/ranch/ebin \
+    -pa ../amp/ebin \
+    "$@"
