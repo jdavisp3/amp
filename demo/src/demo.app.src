@@ -2,7 +2,7 @@
 
 {application, demo,
  [
-  {description, "EventSource demo."},
+  {description, "AMP demo."},
   {vsn, "1"},
   {modules, []},
   {registered, []},
@@ -12,6 +12,5 @@
                   ranch,
                   amp
                  ]},
-  {mod, {demo_app, []}},
   {env, []}
 ]}.
