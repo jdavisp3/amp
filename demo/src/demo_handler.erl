@@ -11,7 +11,6 @@
 
 
 init([]) ->
-    error_logger:info_report(init),
     Sum = amp_command:new(
             <<"Sum">>,
             [{<<"a">>, integer, []},
