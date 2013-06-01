@@ -118,9 +118,10 @@ handle_cast(_, State) ->
 % @private
 handle_info({timeout, Ref, _}, #state{timeout_ref=Ref}=State) ->
     handle_info(timeout, State#state{timeout_ref=undefined});
-handle_info({Ok, Socket, Data}, #state{transport=Transport,
-                                       socket=Socket,
-                                       transport_messages={Ok, _, _}}=State) ->
+handle_info({Ok, Socket, Data},
+            #state{transport=Transport,
+                   socket=Socket,
+                   transport_messages={Ok, _, _}}=State) ->
     try process_data(Data, State) of
         #state{hibernate=false} = State1 ->
             {noreply, State1};
@@ -132,8 +133,14 @@ handle_info({Ok, Socket, Data}, #state{transport=Transport,
     after
         ok = Transport:setopts(Socket, [{active, once}])
     end;
-handle_info({Closed, Socket}, #state{socket=Socket,
-                                     transport_messages={_, Closed, _}}=State) ->
+handle_info({Closed, Socket},
+            #state{socket=Socket,
+                   transport_messages={_, Closed, _}}=State) ->
+    {shutdown, State};
+handle_info({Error, Socket, Reason},
+            #state{socket=Socket,
+                   transport_messages={_, _, Error}}=State) ->
+    error_logger:error_report({Error, Socket, Reason}),
     {shutdown, State};
 handle_info(Info, State) ->
     error_logger:info_report({info, Info}),
