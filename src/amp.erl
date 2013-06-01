@@ -44,5 +44,5 @@ listen(Opts) ->
     Port = proplists:get_value(port, Opts, 0),
     {ok, _} = ranch:start_listener(Name, 100,
                                    ranch_tcp, [{port, Port}],
-                                   amp_server, []),
+                                   amp_server, Opts),
     {ok, ranch:get_port(Name), Name}.

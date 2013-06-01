@@ -21,5 +21,5 @@ divide(Address, Port, N1, N2) ->
 
 start() ->
     ok = application:start(ranch),
-    {ok, Port, _} = amp:listen([{port, 1234}]),
+    {ok, Port, _} = amp:listen([{port, 1234}, {handler, demo_handler}]),
     io:format("Listening on ~p.~n", [Port]).
