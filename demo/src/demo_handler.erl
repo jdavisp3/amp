@@ -33,7 +33,7 @@ handle_ask(<<"Sum">>, Args, _, State) ->
 
 handle_ask(<<"Divide">>, Args, _, State) ->
     Numerator = proplists:get_value(<<"numerator">>, Args),
-    Denominator = proplists:get_value(<<"numerator">>, Args),
+    Denominator = proplists:get_value(<<"denominator">>, Args),
     {reply, divide(Numerator, Denominator), State + 1}.
 
 handle_info(Msg, State) ->
