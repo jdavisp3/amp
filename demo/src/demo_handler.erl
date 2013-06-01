@@ -11,13 +11,17 @@
 
 
 init([]) ->
+    error_logger:info_report(init),
     {ok, undefined, []}.
 
 handle_ask(Name, Args, From, State) ->
-    ok.
+    error_logger:info_report({ask, Name, Args, From, State}),
+    {reply, yup, State}.
 
 handle_info(Msg, State) ->
-    ok.
+    error_logger:info_report({info, Msg, State}),
+    {ok, State}.
 
 terminate(_, _) ->
+    error_logger:info_report(terminate),
     ok.
