@@ -26,11 +26,11 @@ init([]) ->
                [{<<"result">>, integer, []}],
                [{<<"ZERO_DIVISION">>, []}],
                [requires_answer]),
-    {ok, undefined, [Sum, Divide]}.
+    {ok, 0, [Sum, Divide]}.
 
-handle_ask(Name, Args, From, State) ->
-    error_logger:info_report({ask, Name, Args, From, State}),
-    {reply, yup, State}.
+handle_ask(<<"Sum">>, Args, _, State) ->
+    Sum = lists:sum([N || {_, N} <- Args]),
+    {reply, {answer, Sum}, State + 1}.
 
 handle_info(Msg, State) ->
     error_logger:info_report({info, Msg, State}),
