@@ -249,7 +249,7 @@ identify_binbox(BinBox, State) ->
 % @private
 process_binbox({ask, Id, Name, BinBox}, #state{handler=Handler}=State) ->
     Command = lookup_command(State#state.commands, Name),
-    Args = amp_box:decode_box(amp_command:response(Command), BinBox),
+    Args = amp_box:decode_box(amp_command:arguments(Command), BinBox),
     Ref = make_ref(),
     try Handler:handle_ask(Name, Args, Ref, State#state.handler_state) of
         {ok, HandlerState} ->

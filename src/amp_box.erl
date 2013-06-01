@@ -174,7 +174,7 @@ decode_box(Proto, [{Key, Bin} | BinBox], Box) ->
         {value, {_, Type, _}, Proto2} ->
             decode_box(Proto2, BinBox, [{Key, decode_value(Bin, Type)} | Box]);
         false ->
-            error({unexpected_key, Key})
+            error({unexpected_key, Key, Proto})
     end.
 
 
