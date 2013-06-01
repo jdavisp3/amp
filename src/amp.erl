@@ -14,7 +14,8 @@
 
 -module(amp).
 
--export([listen/1]).
+-export([listen/2]).
+-export([stop_listening/1]).
 
 -export_type([amp_box/0, amp_bin_box/0]).
 
@@ -39,10 +40,18 @@
 -opaque amp_command() :: record().
 
 
-listen(Opts) ->
+listen(ConnectionType, Opts) ->
     Name = make_ref(),
-    Port = proplists:get_value(port, Opts, 0),
-    {ok, _} = ranch:start_listener(Name, 100,
-                                   ranch_tcp, [{port, Port}],
-                                   amp_server, Opts),
+    RanchOpts = proplists:get_value(ranch_opts, Opts, []),
+    {ok, _} = ranch:start_listener(Name, 100, ranch_handler(ConnectionType),
+                                   RanchOpts, amp_server, Opts),
     {ok, ranch:get_port(Name), Name}.
+
+stop_listening(Name) ->
+    ranch:stop_listener(Name).
+
+
+ranch_handler(tcp) ->
+    ranch_tcp;
+ranch_handler(ssl) ->
+    ranch_ssl.

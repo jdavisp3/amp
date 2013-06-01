@@ -46,13 +46,12 @@ end_per_suite(_Config) ->
 	ok.
 
 init_per_group(amp, Config) ->
-    {ok, Port, Name} = amp:listen([{handler, amp_test_handler}]),
+    {ok, Port, Name} = amp:listen(tcp, [{handler, amp_test_handler}]),
     [{name, Name}, {port, Port} | Config].
 
 end_per_group(_, Config) ->
     Name = proplists:get_value(name, Config),
-    ranch:stop_listener(Name),
-    ok.
+    ok = amp:stop_listening(Name).
 
 
 success(_Config) ->
