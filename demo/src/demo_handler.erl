@@ -50,6 +50,4 @@ sum([{_, A}, {_, B}]) ->
 divide(_, 0) ->
     {error, <<"ZERO_DIVISION">>, <<"badness">>};
 divide(N, D) ->
-    {answer, [{<<"result">>, N / D}]}.
-
-
+    {answer, [{<<"result">>, trunc(N / D)}]}.
