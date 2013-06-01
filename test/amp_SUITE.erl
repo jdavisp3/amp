@@ -53,3 +53,7 @@ end_per_group(_, Config) ->
     Name = proplists:get_value(name, Config),
     ranch:stop_listener(Name),
     ok.
+
+
+success(_Config) ->
+    ok.
