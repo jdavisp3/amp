@@ -132,6 +132,9 @@ handle_info({Ok, Socket, Data}, #state{transport=Transport,
     after
         ok = Transport:setopts(Socket, [{active, once}])
     end;
+handle_info({Closed, Socket}, #state{socket=Socket,
+                                     transport_messages={_, Closed, _}}=State) ->
+    {shutdown, State};
 handle_info(Info, State) ->
     error_logger:info_report({info, Info}),
     {State1, CallbackOpts} = handler_info(Info, State),
