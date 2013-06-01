@@ -1,1 +1,1 @@
-{incl_app, eventsource, details}.
+{incl_app, amp, details}.
