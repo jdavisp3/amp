@@ -34,8 +34,7 @@ handle_ask(<<"Sum">>, Args, _, State) ->
 handle_ask(<<"Divide">>, Args, _, State) ->
     Numerator = proplists:get_value(<<"numerator">>, Args),
     Denominator = proplists:get_value(<<"numerator">>, Args),
-    Sum = lists:sum([N || {_, N} <- Args]),
-    {reply, {answer, [{<<"total">>, Sum}]}, State + 1}.
+    {reply, divide(Numerator, Denominator), State + 1}.
 
 handle_info(Msg, State) ->
     error_logger:info_report({info, Msg, State}),
@@ -47,3 +46,10 @@ terminate(_, _) ->
 
 sum([{_, A}, {_, B}]) ->
     {answer, [{<<"total">>, A + B}]}.
+
+divide(_, 0) ->
+    {error, <<"ZERO_DIVISION">>, <<"badness">>};
+divide(N, D) ->
+    {answer, [{<<"result">>, N / D}]}.
+
+
