@@ -129,19 +129,18 @@ handle_info({Ok, Socket, Data},
             {noreply, State1#state{hibernate=false}, hibernate}
     catch
         throw:{shutdown, State1} ->
-            {shutdown, State1}
+            {stop, normal, State1}
     after
         ok = Transport:setopts(Socket, [{active, once}])
     end;
 handle_info({Closed, Socket},
             #state{socket=Socket,
                    transport_messages={_, Closed, _}}=State) ->
-    {shutdown, State};
+    {stop, normal, State};
 handle_info({Error, Socket, Reason},
             #state{socket=Socket,
                    transport_messages={_, _, Error}}=State) ->
-    error_logger:error_report({Error, Socket, Reason}),
-    {shutdown, State};
+    {stop, {Error, Reason}, State};
 handle_info(Info, State) ->
     error_logger:info_report({info, Info}),
     {State1, CallbackOpts} = handler_info(Info, State),
