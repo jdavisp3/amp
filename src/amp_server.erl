@@ -130,6 +130,7 @@ handle_info({Ok, Socket, Data}, #state{socket=Socket,
             {shutdown, State1}
     end;
 handle_info(Info, State) ->
+    error_logger:info_report({info, Info}),
     {State1, CallbackOpts} = handler_info(Info, State),
     State2 = update_timeout(State1, CallbackOpts),
     case proplists:get_bool(hibernate, CallbackOpts) of
@@ -142,6 +143,7 @@ handle_info(Info, State) ->
 
 % @private
 terminate(_Reason, _State) ->
+    error_logger:info_report(hi),
     ok.
 
 % @private
