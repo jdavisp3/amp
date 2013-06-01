@@ -12,7 +12,21 @@
 
 init([]) ->
     error_logger:info_report(init),
-    {ok, undefined, []}.
+    Sum = amp_command:new(
+            <<"Sum">>,
+            [{<<"a">>, integer, []},
+             {<<"b">>, integer, []}],
+            [{<<"total">>, integer, []}],
+            [],
+            [requires_answer]),
+    Divide = amp_command:new(
+               <<"Divide">>,
+               [{<<"numerator">>, integer, []},
+                {<<"denominator">>, integer, []}],
+               [{<<"result">>, integer, []}],
+               [{<<"ZERO_DIVISION">>, []}],
+               [requires_answer]),
+    {ok, undefined, [Sum, Divide]}.
 
 handle_ask(Name, Args, From, State) ->
     error_logger:info_report({ask, Name, Args, From, State}),
