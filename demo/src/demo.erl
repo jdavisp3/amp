@@ -21,4 +21,4 @@ divide(Address, Port, N1, N2) ->
 
 start() ->
     ok = application:start(ranch),
-    ok = application:start(demo).
+    amp:listen([]).
