@@ -40,17 +40,19 @@
 
 -opaque amp_command() :: record().
 
--type endpoint() :: {tcp, inet:ip_address() | inet:hostname(),
-                     inet:port_number(), Options::any()}
-                  | {ssl, inet:ip_address() | inet:hostname(),
-                     inet:port_number(), Options::any()}.
+-type endpoint() :: {tcp | ssl,
+                     inet:ip_address() | inet:hostname(),
+                     inet:port_number(),
+                     Options::any()}.
 
 
--spec connect(endpoint(), any()) -> {ok, pid()} | {error, atom()}.
-connect({tcp, Host, Port, ConnectOpts}, Opts) ->
+-spec connect(endpoint(), any()) -> ok.
+connect({ConnectionType, Host, Port, ConnectOpts}, Opts) ->
+    Ref = make_ref(),
     case ranch_tcp:connect(Host, Port, ConnectOpts) of
         {ok, Socket} ->
-            start_conn_server(ranch_tcp, Socket, amp_server, Opts);
+            start_conn_server(ranch_handler(ConnectionType), Socket, amp_server,
+                              [{connect_client, self(), Ref} | Opts]);
         Error ->
             Error
     end.
