@@ -15,7 +15,7 @@
 -module(amp).
 
 -export([connect/2]).
--export([listen/2]).
+-export([listen/3]).
 -export([stop_listening/1]).
 
 -export_type([amp_box/0, amp_bin_box/0]).
@@ -51,17 +51,16 @@ connect({ConnectionType, Host, Port, ConnectOpts}, Opts) ->
     Ref = make_ref(),
     case ranch_tcp:connect(Host, Port, ConnectOpts) of
         {ok, Socket} ->
-            start_conn_server(ranch_handler(ConnectionType), Socket, amp_server,
+            start_conn_server(conn_transport(ConnectionType), Socket, amp_server,
                               [{connect_client, self(), Ref} | Opts]);
         Error ->
             Error
     end.
 
-listen(ConnectionType, Opts) ->
+listen(ConnectionType, TransportOpts, AmpOpts) ->
     Name = make_ref(),
-    RanchOpts = proplists:get_value(ranch_opts, Opts, []),
-    {ok, _} = ranch:start_listener(Name, 100, ranch_handler(ConnectionType),
-                                   RanchOpts, amp_server, Opts),
+    {ok, _} = ranch:start_listener(Name, 100, listen_transport(ConnectionType),
+                                   TransportOpts, amp_server, AmpOpts),
     {ok, ranch:get_port(Name), Name}.
 
 stop_listening(Name) ->
@@ -77,7 +76,12 @@ start_conn_server(Transport, Socket, Protocol, ProtoOpts) ->
     SupPid = ranch_server:get_connections_sup(Ref),
     ranch_conns_sup:start_protocol(SupPid, Socket).
 
-ranch_handler(tcp) ->
+conn_transport(tcp) ->
+    amp_null_tcp;
+conn_transport(ssl) ->
+    amp_null_ssl.
+
+listen_transport(tcp) ->
     ranch_tcp;
-ranch_handler(ssl) ->
+listen_transport(ssl) ->
     ranch_ssl.
