@@ -50,6 +50,8 @@ listen(ConnectionType, Opts) ->
 stop_listening(Name) ->
     ranch:stop_listener(Name).
 
+connect(Endpoint) ->
+    ok.
 
 ranch_handler(tcp) ->
     ranch_tcp;
