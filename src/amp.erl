@@ -71,8 +71,8 @@ stop_listening(Name) ->
 start_conn_server(Transport, Socket, Protocol, ProtoOpts) ->
     Ref = {ampconn, Transport},
     case ranch:start_listener(Ref, 0, Transport, [], Protocol, ProtoOpts) of
-            {ok, _} -> ok;
-            {error, {already_started, _}} -> ok
+        {ok, _} -> ok;
+        {error, {already_started, _}} -> ok
     end,
     SupPid = ranch_server:get_connections_sup(Ref),
     ranch_conns_sup:start_protocol(SupPid, Socket).
