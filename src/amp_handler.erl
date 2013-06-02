@@ -21,12 +21,7 @@
                | {error, Code::amp:amp_name(),
                   Description::amp:amp_name()}.
 -type callback_opts() :: [hibernate | timeout()].
--type terminate_reason() :: {normal, shutdown}
-                          | {normal, timeout}
-                          | {error, closed}
-                          | {error, badencoding}
-                          | {error, badframe}
-                          | {error, atom()}.
+-type terminate_reason() :: any().
 
 -callback init(opts()) ->
           {ok, state(), [amp:amp_command()]}

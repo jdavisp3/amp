@@ -39,8 +39,8 @@ handle_info(Msg, State) ->
     error_logger:info_report({info, Msg, State}),
     {ok, State}.
 
-terminate(_, _) ->
-    error_logger:info_report(terminate),
+terminate(Reason, _) ->
+    error_logger:info_report({terminate, Reason}),
     ok.
 
 sum([{_, A}, {_, B}]) ->
