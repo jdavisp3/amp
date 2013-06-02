@@ -14,6 +14,7 @@
 
 -module(amp).
 
+-export([connect/2]).
 -export([listen/2]).
 -export([stop_listening/1]).
 
@@ -39,6 +40,20 @@
 
 -opaque amp_command() :: record().
 
+-type endpoint() :: {tcp, inet:ip_address() | inet:hostname(),
+                     inet:port_number(), Options::any()}
+                  | {ssl, inet:ip_address() | inet:hostname(),
+                     inet:port_number(), Options::any()}.
+
+
+-spec connect(endpoint(), any()) -> {ok, pid()} | {error, atom()}.
+connect({tcp, Host, Port, ConnectOpts}, Opts) ->
+    case ranch_tcp:connect(Host, Port, ConnectOpts) of
+        {ok, Socket} ->
+            start_conn_server(ranch_tcp, Socket, amp_server, Opts);
+        Error ->
+            Error
+    end.
 
 listen(ConnectionType, Opts) ->
     Name = make_ref(),
@@ -50,8 +65,15 @@ listen(ConnectionType, Opts) ->
 stop_listening(Name) ->
     ranch:stop_listener(Name).
 
-connect(Endpoint) ->
-    ok.
+
+start_conn_server(Transport, Socket, Protocol, ProtoOpts) ->
+    Ref = {ampconn, Transport},
+    case ranch:start_listener(Ref, 0, Transport, [], Protocol, ProtoOpts) of
+            {ok, _} -> ok;
+            {error, {already_started, _}} -> ok
+    end,
+    SupPid = ranch_server:get_connections_sup(Ref),
+    ranch_conns_sup:start_protocol(SupPid, Socket).
 
 ranch_handler(tcp) ->
     ranch_tcp;
