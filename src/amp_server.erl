@@ -154,8 +154,8 @@ handle_info(Info, State) ->
 
 
 % @private
-terminate(_Reason, _State) ->
-    error_logger:info_report(hi),
+terminate(Reason, State) ->
+    handler_terminate(Reason, State),
     ok.
 
 % @private
@@ -326,6 +326,21 @@ handler_info(Info, #state{handler=Handler}=State) ->
             {State1#state{handler_state=HandlerState}, CallbackOpts};
         {shutdown, HandlerState} ->
             throw({shutdown, {State#state{handler_state=HandlerState}}})
+    catch Class:Reason ->
+            error_logger:error_msg(
+              "** Amp handler ~p terminating in ~p/~p~n"
+              "   for the reason ~p:~p~n"
+              "** State was ~p~n"
+              "** Stacktrace: ~p~n~n",
+              [Handler, init, 1, Class, Reason,
+               State#state.handler_state, erlang:get_stacktrace()]),
+            error(Reason)
+    end.
+
+
+handler_terminate(TermReason, #state{handler=Handler}=State) ->
+    try
+        Handler:terminate(TermReason, State#state.handler_state)
     catch Class:Reason ->
             error_logger:error_msg(
               "** Amp handler ~p terminating in ~p/~p~n"
